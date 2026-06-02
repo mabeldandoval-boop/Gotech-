@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 100% 6%;
+    --foreground: 0 0% 100%;
+    --card: 212 68% 12%;
+    --card-foreground: 0 0% 100%;
+    --popover: 212 68% 10%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 196 100% 50%;
+    --primary-foreground: 210 100% 6%;
+    --secondary: 212 68% 16%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 212 50% 14%;
+    --muted-foreground: 210 30% 65%;
+    --accent: 210 100% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 85% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 212 50% 20%;
+    --input: 212 50% 16%;
+    --ring: 196 100% 50%;
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    @apply bg-dark-900 text-white font-montserrat;
+    background-color: #000000;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .btn-neon {
+    @apply bg-btn-gradient text-dark-900 font-bold rounded-xl px-6 py-3 
+           transition-all duration-300 hover:shadow-neon-lg hover:scale-105 
+           active:scale-95 cursor-pointer border-0 text-sm uppercase tracking-wider;
+  }
+
+  .btn-neon-outline {
+    @apply border-2 border-neon-cyan text-neon-cyan font-bold rounded-xl px-6 py-3
+           transition-all duration-300 hover:bg-neon-cyan hover:text-dark-900
+           hover:shadow-neon active:scale-95 cursor-pointer bg-transparent text-sm uppercase tracking-wider;
+  }
+
+  .card-tech {
+    @apply bg-card-gradient border border-neon-cyan/20 rounded-2xl
+           shadow-card hover:border-neon-cyan/50 hover:shadow-neon
+           transition-all duration-300;
+  }
+
+  .glow-text {
+    text-shadow: 0 0 20px rgba(0, 207, 255, 0.8), 0 0 40px rgba(0, 207, 255, 0.4);
+  }
+
+  .section-grid {
+    background-image: linear-gradient(rgba(0,207,255,0.04) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(0,207,255,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .badge-neon {
+    @apply bg-neon-cyan/10 border border-neon-cyan/40 text-neon-cyan 
+           text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #050D1A;
+}
+::-webkit-scrollbar-thumb {
+  background: #00CFFF40;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00CFFF80;
+}
+
+/* Neon line divider */
+.neon-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #00CFFF, transparent);
+  opacity: 0.5;
+}
