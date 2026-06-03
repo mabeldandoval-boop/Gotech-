@@ -15,6 +15,7 @@ interface CartContextType {
   setAddress: (addr: string) => void;
   addToCart: (product: Product) => void;
   addBundle: (bundle: Bundle) => void;
+  addCustomComboToCart: (products: Product[], discount: number) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, qty: number) => void;
   clearCart: () => void;
@@ -27,6 +28,7 @@ interface CartContextType {
   removePromoCode: () => void;
   discountAmount: number;
   bundleDiscountTotal: number;
+  customComboDiscountTotal: number;
   finalTotal: number;
   isOpen: boolean;
   openCart: () => void;
@@ -42,6 +44,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [promoCode, setPromoCode] = useState<PromoCode | null>(null);
   const [promoInput, setPromoInput] = useState("");
   const [appliedBundles, setAppliedBundles] = useState<Bundle[]>([]);
+  const [customCombos, setCustomCombos] = useState<{ productIds: string[]; discount: number }[]>([]);
 
   const addToCart = useCallback((product: Product) => {
     setItems((prev) => {
@@ -83,6 +86,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setIsOpen(true);
   }, []);
 
+  const addCustomComboToCart = useCallback((products: Product[], discount: number) => {
+    setItems((prev) => {
+      let updated = [...prev];
+      for (const product of products) {
+        const existing = updated.find((i) => i.product.id === product.id);
+        if (existing) {
+          updated = updated.map((i) =>
+            i.product.id === product.id
+              ? { ...i, quantity: Math.min(i.quantity + 1, i.product.stock) }
+              : i
+          );
+        } else {
+          updated = [...updated, { product, quantity: 1 }];
+        }
+      }
+      return updated;
+    });
+    setCustomCombos((prev) => [...prev, { productIds: products.map((p) => p.id), discount }]);
+    setIsOpen(true);
+  }, []);
+
   const removeFromCart = useCallback((productId: string) => {
     setItems((prev) => prev.filter((i) => i.product.id !== productId));
   }, []);
@@ -121,6 +145,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setPromoCode(null);
     setPromoInput("");
     setAppliedBundles([]);
+    setCustomCombos([]);
   }, []);
 
   const openCart = useCallback(() => setIsOpen(true), []);
@@ -159,16 +184,23 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return allInCart ? total + (bundle.originalTotal - bundle.bundlePrice) : total;
   }, 0);
 
-  const finalTotal = Math.max(0, totalPrice - discountAmount - bundleDiscountTotal);
+  const customComboDiscountTotal = customCombos.reduce((total, combo) => {
+    const allInCart = combo.productIds.every((id) =>
+      items.some((i) => i.product.id === id)
+    );
+    return allInCart ? total + combo.discount : total;
+  }, 0);
+
+  const finalTotal = Math.max(0, totalPrice - discountAmount - bundleDiscountTotal - customComboDiscountTotal);
 
   return (
     <CartContext.Provider
       value={{
         items, address, setAddress,
-        addToCart, addBundle, removeFromCart, updateQuantity, clearCart,
+        addToCart, addBundle, addCustomComboToCart, removeFromCart, updateQuantity, clearCart,
         totalItems, totalPrice,
         promoCode, promoInput, setPromoInput, applyPromoCode, removePromoCode,
-        discountAmount, bundleDiscountTotal, finalTotal,
+        discountAmount, bundleDiscountTotal, customComboDiscountTotal, finalTotal,
         isOpen, openCart, closeCart,
       }}
     >
