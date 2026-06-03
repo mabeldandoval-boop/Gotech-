@@ -147,6 +147,13 @@ export default function DeliveryScheduler() {
   const visibleDays = days.slice(dayIndex, dayIndex + 4);
   const selectedPickerProduct = PICKER_PRODUCTS.find((p) => p.name === form.product);
 
+  const LIMITED_ZONES = ["Torre Futura", "75 Av. Norte (Gasolinera)"];
+  const selectedPrice = selectedPickerProduct?.price ?? null;
+  const availableDeliveryPoints =
+    selectedPrice !== null && selectedPrice < 8
+      ? DELIVERY_POINTS.filter((z) => LIMITED_ZONES.includes(z))
+      : DELIVERY_POINTS;
+
   return (
     <section className="py-20 section-grid" id="agenda">
       <div className="max-w-5xl mx-auto px-4">
@@ -353,7 +360,13 @@ export default function DeliveryScheduler() {
                         <button
                           key={prod.id}
                           type="button"
-                          onClick={() => setForm((f) => ({ ...f, product: prod.name }))}
+                          onClick={() => setForm((f) => {
+                            const newPrice = prod.price;
+                            const newLimited = newPrice !== null && newPrice < 8;
+                            const limitedZones = ["Torre Futura", "75 Av. Norte (Gasolinera)"];
+                            const pointStillValid = !newLimited || limitedZones.includes(f.deliveryPoint);
+                            return { ...f, product: prod.name, deliveryPoint: pointStillValid ? f.deliveryPoint : "" };
+                          })}
                           className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-all ${
                             isSelected
                               ? "bg-neon-cyan/10"
@@ -409,8 +422,13 @@ export default function DeliveryScheduler() {
                   <label className="flex items-center gap-1.5 text-white/60 text-xs font-semibold mb-2">
                     <Truck className="w-3.5 h-3.5 text-neon-cyan" /> Punto de entrega *
                   </label>
+                  {selectedPrice !== null && selectedPrice < 8 && (
+                    <p className="text-yellow-400/80 text-xs mb-2 flex items-center gap-1">
+                      ⚠️ Productos menores de $8 solo aplican envío en Torre Futura y 75 Av. Norte.
+                    </p>
+                  )}
                   <div className="grid grid-cols-1 gap-1">
-                    {DELIVERY_POINTS.map((point) => {
+                    {availableDeliveryPoints.map((point) => {
                       const isSelected = form.deliveryPoint === point;
                       return (
                         <button
