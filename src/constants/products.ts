@@ -210,6 +210,25 @@ export const PRODUCTS: Product[] = [
     available: true,
     category: "Controles",
   },
+  {
+    id: "bocina-portatil",
+    name: "Bocina Portátil Bluetooth GTS-1961",
+    shortName: "Bocina Portátil",
+    price: 5.99,
+    stock: 10,
+    image: "/bocina-portatil.png",
+    badge: "🔊 NUEVO",
+    description: "Bocina portátil con sonido potente y claro. Bluetooth 5.0 con alcance de 10m. Reproduce por Bluetooth, USB, TF Card y FM. Batería recargable de larga duración.",
+    features: [
+      "Sonido potente — audio claro y de alta fidelidad",
+      "Bluetooth 5.0 — conexión estable hasta 10m",
+      "Multifunción: Bluetooth, USB, TF Card y FM",
+      "Batería recargable para más horas de música",
+      "Portátil y ligera, llévala a donde quieras",
+    ],
+    available: true,
+    category: "Bocinas",
+  },
 ];
 
 export function getDiscountedPrice(product: Product, dynamicDiscount?: number): number {
