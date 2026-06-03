@@ -162,6 +162,10 @@ export default function DeliveryScheduler() {
           <p className="text-white/50 text-base max-w-md mx-auto">
             Elige el día y la hora de tu entrega. Los espacios ocupados se marcan automáticamente.
           </p>
+          <div className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-xl bg-neon-cyan/10 border border-neon-cyan/20">
+            <Clock className="w-3.5 h-3.5 text-neon-cyan shrink-0" />
+            <span className="text-neon-cyan text-xs font-semibold">Horario de atención: Lunes a Sábado · 8:00 AM – 4:00 PM</span>
+          </div>
         </div>
 
         <div className="card-tech overflow-hidden">
