@@ -14,6 +14,7 @@ export interface Booking {
 
 // Available delivery hours
 export const AVAILABLE_HOURS = [
+  { hour: 8,  label: "8:00 AM" },
   { hour: 9,  label: "9:00 AM" },
   { hour: 10, label: "10:00 AM" },
   { hour: 11, label: "11:00 AM" },
@@ -22,8 +23,6 @@ export const AVAILABLE_HOURS = [
   { hour: 14, label: "2:00 PM" },
   { hour: 15, label: "3:00 PM" },
   { hour: 16, label: "4:00 PM" },
-  { hour: 17, label: "5:00 PM" },
-  { hour: 18, label: "6:00 PM" },
 ];
 
 export const DELIVERY_POINTS = [
