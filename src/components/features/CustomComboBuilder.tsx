@@ -7,7 +7,7 @@ const COMBO_DISCOUNT = 0.80;
 const MIN_PRODUCTS = 2;
 
 export default function CustomComboBuilder() {
-  const { addToCart, openCart } = useCart();
+  const { addCustomComboToCart, openCart } = useCart();
   const [selected, setSelected] = useState<string[]>([]);
 
   const toggle = (id: string) => {
@@ -22,7 +22,7 @@ export default function CustomComboBuilder() {
   const finalTotal = originalTotal - discount;
 
   const handleAddToCart = () => {
-    selectedProducts.forEach((p) => addToCart(p));
+    addCustomComboToCart(selectedProducts, discount);
     setSelected([]);
     openCart();
   };
