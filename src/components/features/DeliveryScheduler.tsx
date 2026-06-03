@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import { Calendar, Clock, CheckCircle2, MessageCircle, X, User, Package, MapPin, ChevronLeft, ChevronRight, Phone } from "lucide-react";
+import { Calendar, Clock, CheckCircle2, MessageCircle, X, User, Package, MapPin, ChevronLeft, ChevronRight, Phone, Truck } from "lucide-react";
 import {
   Booking,
   AVAILABLE_HOURS,
   DELIVERY_POINTS,
   getSlotKey,
   getNextDays,
-  formatDayShort,
   formatDayFull,
   formatHour,
   loadBookings,
@@ -15,8 +14,55 @@ import {
   buildScheduleWhatsApp,
 } from "@/constants/schedule";
 import { WHATSAPP_NUMBER, PRODUCTS } from "@/constants/products";
+import { BUNDLES } from "@/constants/bundles";
 
 type Step = "calendar" | "form" | "whatsapp" | "confirm";
+
+interface PickerProduct {
+  id: string;
+  name: string;
+  price: number | null;
+  image: string | null;
+  images?: string[];
+  isBundle: boolean;
+  badge?: string;
+}
+
+const PICKER_PRODUCTS: PickerProduct[] = [
+  ...PRODUCTS.map((p) => ({
+    id: p.id,
+    name: p.name,
+    price: p.price,
+    image: p.image,
+    isBundle: false,
+    badge: p.badge,
+  })),
+  ...BUNDLES.map((b) => {
+    const imgs = b.productIds
+      .map((id) => PRODUCTS.find((p) => p.id === id)?.image)
+      .filter(Boolean) as string[];
+    return {
+      id: b.id,
+      name: b.name,
+      price: b.bundlePrice,
+      image: imgs[0] ?? null,
+      images: imgs,
+      isBundle: true,
+      badge: b.badge,
+    };
+  }),
+  { id: "otro", name: "Otro producto", price: null, image: null, isBundle: false },
+];
+
+const DELIVERY_POINT_ICONS: Record<string, string> = {
+  "Torre Futura": "🏢",
+  "75 Av. Norte (Gasolinera)": "⛽",
+  "Salvador del Mundo": "🗽",
+  "Galerías Escalón": "🏬",
+  "Redondel Masferrer": "🔵",
+  "Redondel Luceiro": "🔵",
+  "Colonia Escalón": "🏘️",
+};
 
 export default function DeliveryScheduler() {
   const [days] = useState(() => getNextDays(7));
@@ -27,7 +73,6 @@ export default function DeliveryScheduler() {
   const [dayIndex, setDayIndex] = useState(0);
   const [pendingBooking, setPendingBooking] = useState<Booking | null>(null);
 
-  // Form state
   const [form, setForm] = useState({
     name: "",
     product: "",
@@ -99,9 +144,8 @@ export default function DeliveryScheduler() {
     setPendingBooking(null);
   };
 
-  const slotKey = selectedHour ? getSlotKey(selectedDay, selectedHour) : "";
-
   const visibleDays = days.slice(dayIndex, dayIndex + 4);
+  const selectedPickerProduct = PICKER_PRODUCTS.find((p) => p.name === form.product);
 
   return (
     <section className="py-20 section-grid" id="agenda">
@@ -142,7 +186,6 @@ export default function DeliveryScheduler() {
           {/* ── STEP 1: CALENDAR ── */}
           {step === "calendar" && (
             <div className="p-6">
-              {/* Day selector */}
               <div className="mb-6">
                 <p className="text-neon-cyan/70 text-xs font-bold uppercase tracking-widest mb-3 flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5" /> Selecciona el día
@@ -192,7 +235,6 @@ export default function DeliveryScheduler() {
                 </div>
               </div>
 
-              {/* Time slots */}
               <div>
                 <p className="text-neon-cyan/70 text-xs font-bold uppercase tracking-widest mb-3 flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5" /> Horarios disponibles — {selectedDay.toLocaleDateString("es-SV", { weekday: "long", day: "numeric", month: "long" })}
@@ -225,7 +267,6 @@ export default function DeliveryScheduler() {
                 </div>
               </div>
 
-              {/* Legend */}
               <div className="flex items-center gap-4 mt-4 text-[11px] text-white/30">
                 <div className="flex items-center gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-sm border border-neon-cyan/40 bg-neon-cyan/10" />
@@ -248,7 +289,7 @@ export default function DeliveryScheduler() {
                   <Calendar className="w-4 h-4 text-neon-cyan" />
                 </div>
                 <div>
-                  <p className="text-neon-cyan font-bold text-sm">{formatDayFull(selectedDay)}</p>
+                  <p className="text-neon-cyan font-bold text-sm">{selectedDay ? selectedDay.toLocaleDateString("es-SV", { weekday: "long", day: "numeric", month: "long" }) : ""}</p>
                   <p className="text-white/60 text-xs">{selectedHour ? formatHour(selectedHour) : ""}</p>
                 </div>
                 <button type="button" onClick={() => setStep("calendar")} className="ml-auto text-white/30 hover:text-white transition-colors">
@@ -258,7 +299,7 @@ export default function DeliveryScheduler() {
 
               <p className="text-neon-cyan/70 text-xs font-bold uppercase tracking-widest mb-4">Tus datos de entrega</p>
 
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {/* Name */}
                 <div>
                   <label className="flex items-center gap-1.5 text-white/60 text-xs font-semibold mb-1.5">
@@ -274,46 +315,127 @@ export default function DeliveryScheduler() {
                   />
                 </div>
 
-                {/* Product */}
+                {/* Product — visual picker */}
                 <div>
-                  <label className="flex items-center gap-1.5 text-white/60 text-xs font-semibold mb-1.5">
+                  <label className="flex items-center gap-1.5 text-white/60 text-xs font-semibold mb-2">
                     <Package className="w-3.5 h-3.5 text-neon-cyan" /> Producto pedido *
                   </label>
-                  <select
-                    value={form.product}
-                    onChange={(e) => setForm((f) => ({ ...f, product: e.target.value }))}
-                    className="w-full bg-dark-700 border border-neon-cyan/20 focus:border-neon-cyan/60 rounded-xl px-4 py-3 text-white text-sm outline-none transition-colors appearance-none"
-                    required
-                  >
-                    <option value="" className="bg-dark-800">Selecciona un producto...</option>
-                    {PRODUCTS.map((p) => (
-                      <option key={p.id} value={p.name} className="bg-dark-800">{p.name} — ${p.price.toFixed(2)}</option>
-                    ))}
-                    <option value="Moto Pack Pro (Combo)" className="bg-dark-800">Moto Pack Pro (Combo) — $15.00</option>
-                    <option value="Control Pack (Combo)" className="bg-dark-800">Control Pack (Combo) — $14.00</option>
-                    <option value="Otro producto" className="bg-dark-800">Otro producto</option>
-                  </select>
+
+                  {/* Selected preview */}
+                  {selectedPickerProduct && (
+                    <div className="flex items-center gap-3 bg-neon-cyan/10 border border-neon-cyan/40 rounded-xl px-3 py-2.5 mb-2">
+                      {selectedPickerProduct.image ? (
+                        <img src={selectedPickerProduct.image} alt={selectedPickerProduct.name} className="w-10 h-10 object-contain rounded-lg bg-dark-700 shrink-0" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center shrink-0">
+                          <Package className="w-5 h-5 text-neon-cyan/40" />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white font-bold text-xs leading-tight truncate">{selectedPickerProduct.name}</p>
+                        {selectedPickerProduct.price !== null && (
+                          <p className="text-neon-cyan font-black text-sm">${selectedPickerProduct.price.toFixed(2)}</p>
+                        )}
+                      </div>
+                      <CheckCircle2 className="w-4 h-4 text-neon-cyan shrink-0" />
+                    </div>
+                  )}
+
+                  {/* Scrollable product grid */}
+                  <div className="max-h-56 overflow-y-auto rounded-xl border border-neon-cyan/15 bg-dark-700/30 divide-y divide-neon-cyan/10">
+                    {PICKER_PRODUCTS.map((prod) => {
+                      const isSelected = form.product === prod.name;
+                      return (
+                        <button
+                          key={prod.id}
+                          type="button"
+                          onClick={() => setForm((f) => ({ ...f, product: prod.name }))}
+                          className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-all ${
+                            isSelected
+                              ? "bg-neon-cyan/10"
+                              : "hover:bg-dark-600/60"
+                          }`}
+                        >
+                          {prod.id === "otro" ? (
+                            <div className="w-10 h-10 rounded-lg bg-dark-600 border border-white/10 flex items-center justify-center shrink-0">
+                              <span className="text-lg">📦</span>
+                            </div>
+                          ) : prod.isBundle && prod.images && prod.images.length > 1 ? (
+                            <div className="w-10 h-10 relative shrink-0">
+                              <img src={prod.images[0]} alt="" className="w-7 h-7 object-contain rounded-md bg-dark-700 absolute top-0 left-0" />
+                              <img src={prod.images[1]} alt="" className="w-7 h-7 object-contain rounded-md bg-dark-700 absolute bottom-0 right-0 border border-dark-800" />
+                            </div>
+                          ) : prod.image ? (
+                            <img src={prod.image} alt={prod.name} className="w-10 h-10 object-contain rounded-lg bg-dark-700 shrink-0" />
+                          ) : (
+                            <div className="w-10 h-10 rounded-lg bg-dark-600 flex items-center justify-center shrink-0">
+                              <Package className="w-4 h-4 text-white/20" />
+                            </div>
+                          )}
+
+                          <div className="flex-1 min-w-0">
+                            <p className={`font-semibold text-xs leading-tight truncate ${isSelected ? "text-neon-cyan" : "text-white/80"}`}>
+                              {prod.name}
+                            </p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              {prod.price !== null && (
+                                <span className={`font-black text-xs ${isSelected ? "text-neon-cyan" : "text-white/50"}`}>
+                                  ${prod.price.toFixed(2)}
+                                </span>
+                              )}
+                              {prod.isBundle && (
+                                <span className="text-[9px] font-black bg-neon-cyan/20 text-neon-cyan px-1.5 py-0.5 rounded-full uppercase tracking-wider">COMBO</span>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${
+                            isSelected ? "border-neon-cyan bg-neon-cyan" : "border-white/20"
+                          }`}>
+                            {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-dark-900" />}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                {/* Delivery point */}
+                {/* Delivery point — styled pills */}
                 <div>
-                  <label className="flex items-center gap-1.5 text-white/60 text-xs font-semibold mb-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-neon-cyan" /> Punto de entrega *
+                  <label className="flex items-center gap-1.5 text-white/60 text-xs font-semibold mb-2">
+                    <Truck className="w-3.5 h-3.5 text-neon-cyan" /> Punto de entrega *
                   </label>
-                  <select
-                    value={form.deliveryPoint}
-                    onChange={(e) => setForm((f) => ({ ...f, deliveryPoint: e.target.value }))}
-                    className="w-full bg-dark-700 border border-neon-cyan/20 focus:border-neon-cyan/60 rounded-xl px-4 py-3 text-white text-sm outline-none transition-colors appearance-none"
-                    required
-                  >
-                    <option value="" className="bg-dark-800">Selecciona zona...</option>
-                    {DELIVERY_POINTS.map((p) => (
-                      <option key={p} value={p} className="bg-dark-800">{p}</option>
-                    ))}
-                  </select>
+                  <div className="grid grid-cols-1 gap-2">
+                    {DELIVERY_POINTS.map((point) => {
+                      const isSelected = form.deliveryPoint === point;
+                      const icon = DELIVERY_POINT_ICONS[point] ?? "📍";
+                      return (
+                        <button
+                          key={point}
+                          type="button"
+                          onClick={() => setForm((f) => ({ ...f, deliveryPoint: point }))}
+                          className={`flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-all ${
+                            isSelected
+                              ? "border-neon-cyan bg-neon-cyan/10 shadow-[0_0_12px_rgba(0,207,255,0.1)]"
+                              : "border-white/10 bg-dark-700/50 hover:border-neon-cyan/30"
+                          }`}
+                        >
+                          <span className="text-xl shrink-0">{icon}</span>
+                          <span className={`flex-1 font-semibold text-sm ${isSelected ? "text-neon-cyan" : "text-white/70"}`}>
+                            {point}
+                          </span>
+                          <div className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${
+                            isSelected ? "border-neon-cyan bg-neon-cyan" : "border-white/20"
+                          }`}>
+                            {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-dark-900" />}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                {/* Phone (optional) */}
+                {/* Phone */}
                 <div>
                   <label className="flex items-center gap-1.5 text-white/60 text-xs font-semibold mb-1.5">
                     <Phone className="w-3.5 h-3.5 text-neon-cyan" /> Teléfono (opcional)
@@ -367,12 +489,30 @@ export default function DeliveryScheduler() {
 
               {/* Summary card */}
               <div className="bg-dark-700/60 border border-neon-cyan/20 rounded-2xl p-5 text-left mb-6 max-w-sm mx-auto">
+                {/* Product image preview */}
+                {(() => {
+                  const prod = PICKER_PRODUCTS.find((p) => p.name === pendingBooking.product);
+                  if (prod?.image) {
+                    return (
+                      <div className="flex items-center gap-3 mb-4 pb-4 border-b border-neon-cyan/10">
+                        <img src={prod.image} alt={prod.name} className="w-14 h-14 object-contain rounded-xl bg-dark-700" />
+                        <div>
+                          <p className="text-white font-bold text-sm leading-tight">{prod.name}</p>
+                          {prod.price !== null && (
+                            <p className="text-neon-cyan font-black text-lg">${prod.price.toFixed(2)}</p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+
                 <div className="space-y-2.5">
                   {[
                     { icon: <Calendar className="w-3.5 h-3.5" />, label: "Fecha", value: pendingBooking.date },
                     { icon: <Clock className="w-3.5 h-3.5" />, label: "Hora", value: pendingBooking.time },
                     { icon: <User className="w-3.5 h-3.5" />, label: "Nombre", value: pendingBooking.name },
-                    { icon: <Package className="w-3.5 h-3.5" />, label: "Producto", value: pendingBooking.product },
                     { icon: <MapPin className="w-3.5 h-3.5" />, label: "Punto", value: pendingBooking.deliveryPoint },
                   ].map((row) => (
                     <div key={row.label} className="flex items-start gap-3">
@@ -415,14 +555,30 @@ export default function DeliveryScheduler() {
                 Tu horario quedó apartado. Te estaremos contactando para coordinar la entrega.
               </p>
 
-              {/* Summary card */}
               <div className="bg-dark-700/60 border border-green-400/20 rounded-2xl p-5 text-left mb-6 max-w-sm mx-auto">
+                {(() => {
+                  const prod = PICKER_PRODUCTS.find((p) => p.name === pendingBooking.product);
+                  if (prod?.image) {
+                    return (
+                      <div className="flex items-center gap-3 mb-4 pb-4 border-b border-green-400/10">
+                        <img src={prod.image} alt={prod.name} className="w-14 h-14 object-contain rounded-xl bg-dark-700" />
+                        <div>
+                          <p className="text-white font-bold text-sm leading-tight">{prod.name}</p>
+                          {prod.price !== null && (
+                            <p className="text-green-400 font-black text-lg">${prod.price.toFixed(2)}</p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+
                 <div className="space-y-2.5">
                   {[
                     { icon: <Calendar className="w-3.5 h-3.5" />, label: "Fecha", value: pendingBooking.date },
                     { icon: <Clock className="w-3.5 h-3.5" />, label: "Hora", value: pendingBooking.time },
                     { icon: <User className="w-3.5 h-3.5" />, label: "Nombre", value: pendingBooking.name },
-                    { icon: <Package className="w-3.5 h-3.5" />, label: "Producto", value: pendingBooking.product },
                     { icon: <MapPin className="w-3.5 h-3.5" />, label: "Punto", value: pendingBooking.deliveryPoint },
                   ].map((row) => (
                     <div key={row.label} className="flex items-start gap-3">
