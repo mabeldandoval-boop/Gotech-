@@ -405,29 +405,27 @@ export default function DeliveryScheduler() {
                   <label className="flex items-center gap-1.5 text-white/60 text-xs font-semibold mb-2">
                     <Truck className="w-3.5 h-3.5 text-neon-cyan" /> Punto de entrega *
                   </label>
-                  <div className="grid grid-cols-1 gap-2">
+                  <div className="grid grid-cols-1 gap-1">
                     {DELIVERY_POINTS.map((point) => {
                       const isSelected = form.deliveryPoint === point;
-                      const icon = DELIVERY_POINT_ICONS[point] ?? "📍";
                       return (
                         <button
                           key={point}
                           type="button"
                           onClick={() => setForm((f) => ({ ...f, deliveryPoint: point }))}
-                          className={`flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-all ${
+                          className={`flex items-center justify-between px-3 py-1.5 rounded-lg border text-left transition-all ${
                             isSelected
-                              ? "border-neon-cyan bg-neon-cyan/10 shadow-[0_0_12px_rgba(0,207,255,0.1)]"
+                              ? "border-neon-cyan bg-neon-cyan/10"
                               : "border-white/10 bg-dark-700/50 hover:border-neon-cyan/30"
                           }`}
                         >
-                          <span className="text-xl shrink-0">{icon}</span>
-                          <span className={`flex-1 font-semibold text-sm ${isSelected ? "text-neon-cyan" : "text-white/70"}`}>
+                          <span className={`text-xs font-medium ${isSelected ? "text-neon-cyan" : "text-white/60"}`}>
                             {point}
                           </span>
-                          <div className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${
+                          <div className={`w-3 h-3 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${
                             isSelected ? "border-neon-cyan bg-neon-cyan" : "border-white/20"
                           }`}>
-                            {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-dark-900" />}
+                            {isSelected && <div className="w-1 h-1 rounded-full bg-dark-900" />}
                           </div>
                         </button>
                       );
