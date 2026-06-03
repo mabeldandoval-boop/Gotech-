@@ -7,7 +7,7 @@ import AddressPickerModal from "@/components/features/AddressPickerModal";
 import OrderTicketModal from "@/components/features/OrderTicketModal";
 
 export default function CartDrawer() {
-  const { items, address, setAddress, removeFromCart, updateQuantity, clearCart, totalPrice, totalItems, isOpen, closeCart, promoCode, promoInput, setPromoInput, applyPromoCode, removePromoCode, discountAmount, bundleDiscountTotal, finalTotal } = useCart();
+  const { items, address, setAddress, removeFromCart, updateQuantity, clearCart, totalPrice, totalItems, isOpen, closeCart, promoCode, promoInput, setPromoInput, applyPromoCode, removePromoCode, discountAmount, bundleDiscountTotal, customComboDiscountTotal, finalTotal } = useCart();
   const [showAddressPicker, setShowAddressPicker] = useState(false);
   const [showTicket, setShowTicket] = useState(false);
   const [promoStatus, setPromoStatus] = useState<"idle" | "ok" | "invalid" | "empty">("idle");
@@ -269,13 +269,13 @@ export default function CartDrawer() {
                   <span className="text-white/60 text-xs font-bold">${totalPrice.toFixed(2)}</span>
                 </div>
 
-                {bundleDiscountTotal > 0 && (
+                {(bundleDiscountTotal + customComboDiscountTotal) > 0 && (
                   <div className="flex items-center justify-between">
                     <span className="text-green-400 text-xs flex items-center gap-1">
                       <Package className="w-3 h-3" />
                       Descuento combo
                     </span>
-                    <span className="text-green-400 text-xs font-bold">-${bundleDiscountTotal.toFixed(2)}</span>
+                    <span className="text-green-400 text-xs font-bold">-${(bundleDiscountTotal + customComboDiscountTotal).toFixed(2)}</span>
                   </div>
                 )}
 
