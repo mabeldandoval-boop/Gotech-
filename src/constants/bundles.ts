@@ -9,7 +9,7 @@ export interface Bundle {
   bundlePrice: number;
   badge: string;
   emoji: string;
-  highlight: string; // what makes it special
+  highlight: string;
 }
 
 export const BUNDLES: Bundle[] = [
@@ -29,8 +29,8 @@ export const BUNDLES: Bundle[] = [
     name: "Moto Pack Pro",
     tagline: "Soporte Moto + Adaptador Bluetooth",
     productIds: ["soporte-moto", "bluetooth-5-0"],
-    originalTotal: 18.00,
-    bundlePrice: 17.20,
+    originalTotal: 15.50,
+    bundlePrice: 14.70,
     badge: "🏍️ COMBO MOTO",
     emoji: "🏍️",
     highlight: "Ahorrás $0.80",

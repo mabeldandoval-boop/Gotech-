@@ -1,13 +1,13 @@
 
 import { useState } from "react";
-import { X, Plus, Minus, Trash2, MapPin, MessageCircle, ShoppingCart, Truck, Tag, CheckCircle2, XCircle } from "lucide-react";
+import { X, Plus, Minus, Trash2, MapPin, MessageCircle, ShoppingCart, Truck, Tag, CheckCircle2, XCircle, Package } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { getDiscountedPrice, getShippingZones, getShippingLabel, getBluetoothDynamicDiscount } from "@/constants/products";
 import AddressPickerModal from "@/components/features/AddressPickerModal";
 import OrderTicketModal from "@/components/features/OrderTicketModal";
 
 export default function CartDrawer() {
-  const { items, address, setAddress, removeFromCart, updateQuantity, clearCart, totalPrice, totalItems, isOpen, closeCart, promoCode, promoInput, setPromoInput, applyPromoCode, removePromoCode, discountAmount, finalTotal } = useCart();
+  const { items, address, setAddress, removeFromCart, updateQuantity, clearCart, totalPrice, totalItems, isOpen, closeCart, promoCode, promoInput, setPromoInput, applyPromoCode, removePromoCode, discountAmount, bundleDiscountTotal, finalTotal } = useCart();
   const [showAddressPicker, setShowAddressPicker] = useState(false);
   const [showTicket, setShowTicket] = useState(false);
   const [promoStatus, setPromoStatus] = useState<"idle" | "ok" | "invalid" | "empty">("idle");
@@ -20,7 +20,6 @@ export default function CartDrawer() {
   const paidZones = shippingZones.filter((z) => z.cost > 0);
   const shippingLabel = getShippingLabel(totalPrice);
 
-  // How much more to reach next tier (based on effective subtotal)
   const effectiveTotal = items.reduce((sum, { product, quantity }) => {
     const isDynBt = product.id === "bluetooth-5-0" && btDiscount > 0;
     const price = isDynBt ? getDiscountedPrice(product, btDiscount) : getDiscountedPrice(product);
@@ -186,10 +185,8 @@ export default function CartDrawer() {
                 </div>
 
                 <div className="p-4 space-y-2">
-                  {/* Shipping label */}
                   <p className="text-white text-xs font-semibold leading-relaxed">{shippingLabel}</p>
 
-                  {/* Free zones */}
                   {freeZones.length > 0 && (
                     <div className="space-y-1 pt-1">
                       {freeZones.map((z) => (
@@ -204,7 +201,6 @@ export default function CartDrawer() {
                     </div>
                   )}
 
-                  {/* Paid zones */}
                   {paidZones.map((z) => (
                     <div key={z.name} className="flex items-center justify-between">
                       <span className="text-white/60 text-[11px] flex items-center gap-1">
@@ -215,7 +211,6 @@ export default function CartDrawer() {
                     </div>
                   ))}
 
-                  {/* Upsell to next tier */}
                   {toNextTier !== null && (
                     <div className="mt-3 pt-3 border-t border-neon-cyan/10">
                       <div className="flex items-center justify-between mb-1.5">
@@ -224,7 +219,6 @@ export default function CartDrawer() {
                         </span>
                       </div>
                       <p className="text-neon-cyan text-[11px] font-bold">{nextTierLabel}</p>
-                      {/* Progress bar */}
                       <div className="mt-2 h-1.5 bg-dark-600 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-neon-cyan to-neon-blue rounded-full transition-all duration-500"
@@ -274,16 +268,27 @@ export default function CartDrawer() {
                   <span className="text-white/50 text-xs">Subtotal</span>
                   <span className="text-white/60 text-xs font-bold">${totalPrice.toFixed(2)}</span>
                 </div>
+
+                {bundleDiscountTotal > 0 && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-green-400 text-xs flex items-center gap-1">
+                      <Package className="w-3 h-3" />
+                      Descuento combo
+                    </span>
+                    <span className="text-green-400 text-xs font-bold">-${bundleDiscountTotal.toFixed(2)}</span>
+                  </div>
+                )}
+
                 {promoCode && discountAmount > 0 && (
                   <div className="flex items-center justify-between">
                     <span className="text-green-400 text-xs flex items-center gap-1">
                       <Tag className="w-3 h-3" />
-                      {promoCode.code} (-{promoCode.discountPercent}%
-                      {promoCode.productId ? " en Bluetooth" : ""})
+                      {promoCode.code}
                     </span>
                     <span className="text-green-400 text-xs font-bold">-${discountAmount.toFixed(2)}</span>
                   </div>
                 )}
+
                 <div className="flex items-center justify-between pt-1 border-t border-neon-cyan/10">
                   <span className="text-white/60 text-sm font-semibold">Total</span>
                   <span className="font-orbitron font-black text-xl text-neon-cyan glow-text">${finalTotal.toFixed(2)}</span>
@@ -310,7 +315,6 @@ export default function CartDrawer() {
         )}
       </div>
 
-      {/* Address Picker Modal */}
       {showAddressPicker && (
         <AddressPickerModal
           initialAddress={address}
@@ -319,7 +323,6 @@ export default function CartDrawer() {
         />
       )}
 
-      {/* Order Ticket Modal */}
       {showTicket && (
         <OrderTicketModal onClose={() => setShowTicket(false)} />
       )}

@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useCallback, ReactNode } from "react";
 import { Product } from "@/types";
 import { PromoCode, validatePromoCode } from "@/constants/promoCodes";
+import { PRODUCTS } from "@/constants/products";
+import { Bundle } from "@/constants/bundles";
 
 export interface CartItem {
   product: Product;
@@ -12,6 +14,7 @@ interface CartContextType {
   address: string;
   setAddress: (addr: string) => void;
   addToCart: (product: Product) => void;
+  addBundle: (bundle: Bundle) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, qty: number) => void;
   clearCart: () => void;
@@ -23,6 +26,7 @@ interface CartContextType {
   applyPromoCode: () => "ok" | "invalid" | "empty";
   removePromoCode: () => void;
   discountAmount: number;
+  bundleDiscountTotal: number;
   finalTotal: number;
   isOpen: boolean;
   openCart: () => void;
@@ -37,6 +41,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [promoCode, setPromoCode] = useState<PromoCode | null>(null);
   const [promoInput, setPromoInput] = useState("");
+  const [appliedBundles, setAppliedBundles] = useState<Bundle[]>([]);
 
   const addToCart = useCallback((product: Product) => {
     setItems((prev) => {
@@ -50,6 +55,31 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       return [...prev, { product, quantity: 1 }];
     });
+    setIsOpen(true);
+  }, []);
+
+  const addBundle = useCallback((bundle: Bundle) => {
+    setItems((prev) => {
+      let updated = [...prev];
+      for (const productId of bundle.productIds) {
+        const product = PRODUCTS.find((p) => p.id === productId);
+        if (!product) continue;
+        const existing = updated.find((i) => i.product.id === productId);
+        if (existing) {
+          updated = updated.map((i) =>
+            i.product.id === productId
+              ? { ...i, quantity: Math.min(i.quantity + 1, i.product.stock) }
+              : i
+          );
+        } else {
+          updated = [...updated, { product, quantity: 1 }];
+        }
+      }
+      return updated;
+    });
+    setAppliedBundles((prev) =>
+      prev.find((b) => b.id === bundle.id) ? prev : [...prev, bundle]
+    );
     setIsOpen(true);
   }, []);
 
@@ -86,7 +116,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setPromoInput("");
   }, []);
 
-  const clearCart = useCallback(() => { setItems([]); setPromoCode(null); setPromoInput(""); }, []);
+  const clearCart = useCallback(() => {
+    setItems([]);
+    setPromoCode(null);
+    setPromoInput("");
+    setAppliedBundles([]);
+  }, []);
+
   const openCart = useCallback(() => setIsOpen(true), []);
   const closeCart = useCallback(() => setIsOpen(false), []);
 
@@ -97,12 +133,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       : i.product.price;
     return sum + price * i.quantity;
   }, 0);
+
   const discountAmount = promoCode
     ? (() => {
         if (promoCode.productId) {
           const targetItem = items.find((i) => i.product.id === promoCode.productId);
           if (!targetItem) return 0;
-          // Use fixed discount amount if specified (e.g. $0.80 per unit)
           if (promoCode.discountFixed !== undefined) {
             return promoCode.discountFixed * targetItem.quantity;
           }
@@ -115,16 +151,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return totalPrice * (promoCode.discountPercent / 100);
       })()
     : 0;
-  const finalTotal = Math.max(0, totalPrice - discountAmount);
+
+  const bundleDiscountTotal = appliedBundles.reduce((total, bundle) => {
+    const allInCart = bundle.productIds.every((id) =>
+      items.some((i) => i.product.id === id)
+    );
+    return allInCart ? total + (bundle.originalTotal - bundle.bundlePrice) : total;
+  }, 0);
+
+  const finalTotal = Math.max(0, totalPrice - discountAmount - bundleDiscountTotal);
 
   return (
     <CartContext.Provider
       value={{
         items, address, setAddress,
-        addToCart, removeFromCart, updateQuantity, clearCart,
+        addToCart, addBundle, removeFromCart, updateQuantity, clearCart,
         totalItems, totalPrice,
         promoCode, promoInput, setPromoInput, applyPromoCode, removePromoCode,
-        discountAmount, finalTotal,
+        discountAmount, bundleDiscountTotal, finalTotal,
         isOpen, openCart, closeCart,
       }}
     >
