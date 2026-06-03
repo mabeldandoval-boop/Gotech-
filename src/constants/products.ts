@@ -176,7 +176,7 @@ export const PRODUCTS: Product[] = [
     id: "soporte-moto",
     name: "Soporte Premium para Moto 50–95mm",
     shortName: "Soporte Moto",
-    price: 8.50,
+    price: 6.00,
     stock: 7,
     image: "https://cdn-ai.onspace.ai/onspace/files/dY7DxKhGn7koBAfEkp3tJg/1000511238.png",
     badge: "🏍️ PREMIUM",
