@@ -46,6 +46,28 @@ export const BUNDLES: Bundle[] = [
     emoji: "🎮",
     highlight: "Ahorrás $0.80",
   },
+  {
+    id: "moto-seguridad-pack",
+    name: "Moto Seguridad Pack",
+    tagline: "Candado Moto + Soporte para Moto",
+    productIds: ["candado-moto", "soporte-moto"],
+    originalTotal: 11.00,
+    bundlePrice: 10.55,
+    badge: "🏍️ MOTO COMBO",
+    emoji: "🔒🏍️",
+    highlight: "Ahorrás $0.45",
+  },
+  {
+    id: "auto-road-pack",
+    name: "Auto Road Pack",
+    tagline: "Soporte Auto 360° + MicroSD 64GB",
+    productIds: ["soporte-retrovisor", "microsd-64gb"],
+    originalTotal: 14.99,
+    bundlePrice: 14.54,
+    badge: "🚗 AUTO COMBO",
+    emoji: "🚗💾",
+    highlight: "Ahorrás $0.45",
+  },
 ];
 
 export function buildBundleWhatsAppMessage(bundle: Bundle, address?: string): string {
