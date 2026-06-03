@@ -19,10 +19,10 @@ export const BUNDLES: Bundle[] = [
     tagline: "USB Bluetooth 5.0 + MicroSD 64GB",
     productIds: ["bluetooth-5-0", "microsd-64gb"],
     originalTotal: 19.49,
-    bundlePrice: 18.52,
+    bundlePrice: 15.00,
     badge: "⚡ TECH COMBO",
     emoji: "🔵💾",
-    highlight: "Ahorrás $0.97 — 5% OFF",
+    highlight: "Ahorrás $4.49",
   },
   {
     id: "tech-essentials-128",
@@ -30,10 +30,10 @@ export const BUNDLES: Bundle[] = [
     tagline: "USB Bluetooth 5.0 + MicroSD 128GB",
     productIds: ["bluetooth-5-0", "microsd-128gb"],
     originalTotal: 22.50,
-    bundlePrice: 21.38,
+    bundlePrice: 20.00,
     badge: "🔥 MEJOR VALOR",
     emoji: "🔵💾",
-    highlight: "Ahorrás $1.12 — 5% OFF",
+    highlight: "Ahorrás $2.50",
   },
 ];
 
