@@ -5,15 +5,7 @@ import { PRODUCTS, getDiscountedPrice } from "@/constants/products";
 import { useCart } from "@/hooks/useCart";
 
 export default function BundlesSection() {
-  const { address, addToCart, openCart } = useCart();
-
-  const handleAddBundle = (bundle: typeof BUNDLES[0]) => {
-    const products = bundle.productIds
-      .map((id) => PRODUCTS.find((p) => p.id === id))
-      .filter(Boolean) as typeof PRODUCTS;
-    products.forEach((p) => addToCart(p));
-    openCart();
-  };
+  const { address, addBundle } = useCart();
 
   return (
     <section id="combos" className="py-20 bg-dark-800">
@@ -102,7 +94,7 @@ export default function BundlesSection() {
 
                     <div className="flex flex-col gap-2">
                       <button
-                        onClick={() => handleAddBundle(bundle)}
+                        onClick={() => addBundle(bundle)}
                         className="btn-neon w-full flex items-center justify-center gap-2 py-3 text-xs"
                       >
                         <ShoppingCart className="w-3.5 h-3.5" />
