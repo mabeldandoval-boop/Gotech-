@@ -21,7 +21,7 @@ const extraCostZones = [
 
 export default function DeliveryInfo() {
   return (
-    <div className="pt-20 min-h-screen section-grid">
+    <div className="pt-24 min-h-screen section-grid">
       {/* Header */}
       <div className="bg-dark-800 border-b border-neon-cyan/20">
         <div className="max-w-4xl mx-auto px-4 py-12 text-center">
