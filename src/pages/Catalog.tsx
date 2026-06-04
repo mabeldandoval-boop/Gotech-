@@ -34,9 +34,9 @@ export default function Catalog() {
 
       <div className="max-w-6xl mx-auto px-4 py-10">
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-10">
+        <div className="flex flex-col gap-3 mb-10">
           {/* Search */}
-          <div className="relative flex-1">
+          <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neon-cyan/50" />
             <input
               type="text"
@@ -47,14 +47,14 @@ export default function Catalog() {
             />
           </div>
 
-          {/* Category filter */}
-          <div className="flex items-center gap-2">
+          {/* Category filter — horizontal scroll on mobile */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             <Filter className="w-4 h-4 text-neon-cyan/50 shrink-0" />
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2.5 rounded-xl text-sm font-semibold uppercase tracking-wider transition-all duration-200
+                className={`shrink-0 px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all duration-200
                   ${activeCategory === cat
                     ? "bg-neon-cyan text-dark-900 shadow-neon-sm"
                     : "bg-dark-700 border border-neon-cyan/20 text-white/60 hover:border-neon-cyan/50 hover:text-white"
