@@ -20,13 +20,13 @@ export default function Navbar() {
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-50 bg-dark-900/95 backdrop-blur-md border-b border-neon-cyan/20">
-        <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 h-24 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center group">
             <img
               src="/gotech-logo.png"
               alt="GoTech"
-              className="h-20 w-auto object-contain drop-shadow-[0_0_12px_rgba(0,207,255,0.6)]"
+              className="h-24 w-auto object-contain drop-shadow-[0_0_12px_rgba(0,207,255,0.6)]"
             />
           </Link>
 
