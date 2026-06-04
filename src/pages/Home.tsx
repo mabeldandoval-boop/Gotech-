@@ -11,7 +11,7 @@ import DeliveryScheduler from "@/components/features/DeliveryScheduler";
 
 export default function Home() {
   return (
-    <div className="pt-20">
+    <div className="pt-24">
       {/* ── HERO ── */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden">
         {/* BG Image + overlay */}
