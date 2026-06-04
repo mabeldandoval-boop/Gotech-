@@ -54,7 +54,7 @@ export default function AdminPanel() {
   };
 
   return (
-    <div className="pt-20 min-h-screen section-grid">
+    <div className="pt-24 min-h-screen section-grid">
       <div className="max-w-6xl mx-auto px-4 py-10">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
