@@ -22,7 +22,7 @@ export default function Offers() {
   );
 
   return (
-    <div className="pt-20 min-h-screen section-grid">
+    <div className="pt-24 min-h-screen section-grid">
       {/* Header */}
       <section className="relative py-16 overflow-hidden bg-dark-800">
         <div className="absolute inset-0 bg-glow-radial opacity-30" />
