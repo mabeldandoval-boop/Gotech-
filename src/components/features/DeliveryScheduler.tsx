@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Calendar, Clock, CheckCircle2, MessageCircle, X, User, Package, MapPin, ChevronLeft, ChevronRight, Phone, Truck } from "lucide-react";
 import {
   Booking,
-  AVAILABLE_HOURS,
   DELIVERY_POINTS,
   getSlotKey,
   getNextDays,
@@ -12,6 +11,7 @@ import {
   addBooking,
   isSlotTaken,
   buildScheduleWhatsApp,
+  getHoursForDay,
 } from "@/constants/schedule";
 import { WHATSAPP_NUMBER, PRODUCTS } from "@/constants/products";
 import { BUNDLES } from "@/constants/bundles";
@@ -171,7 +171,7 @@ export default function DeliveryScheduler() {
           </p>
           <div className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-xl bg-neon-cyan/10 border border-neon-cyan/20">
             <Clock className="w-3.5 h-3.5 text-neon-cyan shrink-0" />
-            <span className="text-neon-cyan text-xs font-semibold">Horario de atención: Lunes a Sábado · 8:00 AM – 4:00 PM</span>
+            <span className="text-neon-cyan text-xs font-semibold">Lun–Vie: 8:00 AM – 4:00 PM &nbsp;·&nbsp; Sáb–Dom: 1:00 PM – 3:00 PM</span>
           </div>
         </div>
 
@@ -251,7 +251,7 @@ export default function DeliveryScheduler() {
                   <Clock className="w-3.5 h-3.5" /> Horarios disponibles — {selectedDay.toLocaleDateString("es-SV", { weekday: "long", day: "numeric", month: "long" })}
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                  {AVAILABLE_HOURS.map(({ hour, label }) => {
+                  {getHoursForDay(selectedDay).map(({ hour, label }) => {
                     const key = getSlotKey(selectedDay, hour);
                     const taken = bookings.some((b) => b.slotKey === key);
                     return (
