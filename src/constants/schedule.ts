@@ -12,7 +12,7 @@ export interface Booking {
   createdAt: string;
 }
 
-// Available delivery hours
+// Available delivery hours — weekdays
 export const AVAILABLE_HOURS = [
   { hour: 8,  label: "8:00 AM" },
   { hour: 9,  label: "9:00 AM" },
@@ -24,6 +24,18 @@ export const AVAILABLE_HOURS = [
   { hour: 15, label: "3:00 PM" },
   { hour: 16, label: "4:00 PM" },
 ];
+
+// Available delivery hours — weekends (Sábado & Domingo)
+export const WEEKEND_HOURS = [
+  { hour: 13, label: "1:00 PM" },
+  { hour: 14, label: "2:00 PM" },
+  { hour: 15, label: "3:00 PM" },
+];
+
+export function getHoursForDay(date: Date) {
+  const day = date.getDay(); // 0 = Sunday, 6 = Saturday
+  return day === 0 || day === 6 ? WEEKEND_HOURS : AVAILABLE_HOURS;
+}
 
 export const DELIVERY_POINTS = [
   "Salvador del Mundo (Gasolinera Texaco)",
