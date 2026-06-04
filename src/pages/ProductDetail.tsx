@@ -14,7 +14,7 @@ export default function ProductDetail() {
 
   if (!product) {
     return (
-      <div className="pt-20 min-h-screen flex items-center justify-center">
+      <div className="pt-24 min-h-screen flex items-center justify-center">
         <div className="text-center">
           <p className="text-6xl mb-4">📦</p>
           <h2 className="font-orbitron text-2xl text-white mb-4">Producto no encontrado</h2>
@@ -32,7 +32,7 @@ export default function ProductDetail() {
   const otherProducts = PRODUCTS.filter((p) => p.id !== product.id).slice(0, 2);
 
   return (
-    <div className="pt-20 min-h-screen section-grid">
+    <div className="pt-24 min-h-screen section-grid">
       <div className="max-w-6xl mx-auto px-4 py-10">
         {/* Back */}
         <Link
