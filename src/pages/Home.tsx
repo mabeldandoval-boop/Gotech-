@@ -6,7 +6,6 @@ import ProductCard from "@/components/features/ProductCard";
 import ReviewsSection from "@/components/features/ReviewsSection";
 import ProductOfTheDay from "@/components/features/ProductOfTheDay";
 import BundlesSection from "@/components/features/BundlesSection";
-import CustomComboBuilder from "@/components/features/CustomComboBuilder";
 import DeliveryScheduler from "@/components/features/DeliveryScheduler";
 
 export default function Home() {
@@ -242,10 +241,6 @@ export default function Home() {
       {/* ── BUNDLES ── */}
       <BundlesSection />
 
-      <div className="neon-divider" />
-
-      {/* ── CUSTOM COMBO BUILDER ── */}
-      <CustomComboBuilder />
 
       <div className="neon-divider" />
 
