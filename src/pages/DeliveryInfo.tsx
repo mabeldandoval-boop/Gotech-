@@ -1,22 +1,9 @@
-import { MapPin, Truck, MessageCircle, Info } from "lucide-react";
+import { MapPin, Truck, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const freeDeliveryOver9 = [
-  { name: "Salvador del Mundo", detail: "Gasolinera Texaco", icon: "⛽" },
-  { name: "Galerías Escalón", detail: "Centro comercial", icon: "🏬" },
+const zones = [
   { name: "Torre Futura", detail: "Punto de entrega", icon: "🏢" },
   { name: "75 Av. Norte", detail: "Gasolinera", icon: "⛽" },
-  { name: "Redondel Masferrer", detail: "Punto de encuentro", icon: "🔵" },
-  { name: "Redondel Luceiro", detail: "Punto de encuentro", icon: "🔵" },
-];
-
-const freeDeliveryUnder9 = [
-  { name: "Torre Futura", detail: "Punto de entrega", icon: "🏢" },
-  { name: "75 Av. Norte", detail: "Gasolinera", icon: "⛽" },
-];
-
-const extraCostZones = [
-  { name: "Colonia Escalón", detail: "Costo adicional", icon: "🏘️" },
 ];
 
 export default function DeliveryInfo() {
@@ -33,14 +20,10 @@ export default function DeliveryInfo() {
             Envíos Gratis
           </h1>
           <p className="text-white/50 text-base max-w-md mx-auto">
-            Hacemos entregas en San Salvador. Solo en las zonas indicadas.
+            Hacemos entregas en San Salvador. Solo en las zonas indicadas, sin costo adicional.
           </p>
-          {/* Main meeting points highlight */}
           <div className="flex flex-wrap justify-center gap-3 mt-6">
-            {[
-              { name: "Torre Futura", icon: "🏢" },
-              { name: "75 Av. Norte (Gasolinera)", icon: "⛽" },
-            ].map((z) => (
+            {zones.map((z) => (
               <div key={z.name} className="flex items-center gap-2 bg-neon-cyan/10 border border-neon-cyan/30 rounded-xl px-4 py-2">
                 <span>{z.icon}</span>
                 <span className="text-neon-cyan font-bold text-sm">{z.name}</span>
@@ -52,19 +35,19 @@ export default function DeliveryInfo() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-12 space-y-8">
-        {/* Compras $9 o más */}
+        {/* Zones card */}
         <div className="card-tech overflow-hidden">
           <div className="bg-neon-cyan/10 border-b border-neon-cyan/20 px-6 py-4 flex items-center gap-3">
             <div className="w-2 h-2 bg-neon-cyan rounded-full" />
             <div>
-              <h2 className="text-white font-bold text-lg">Compras de $9 o más</h2>
-              <p className="text-green-400 text-sm font-semibold">🚚 Envío GRATIS en estas zonas</p>
+              <h2 className="text-white font-bold text-lg">Zonas de entrega</h2>
+              <p className="text-green-400 text-sm font-semibold">🚚 Envío GRATIS en todas tus compras</p>
             </div>
           </div>
           <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {freeDeliveryOver9.map((zone) => (
-              <div key={zone.name} className="flex items-center gap-3 p-3 rounded-xl bg-dark-700/50 border border-neon-cyan/10">
-                <span className="text-2xl">{zone.icon}</span>
+            {zones.map((zone) => (
+              <div key={zone.name} className="flex items-center gap-3 p-4 rounded-xl bg-dark-700/50 border border-neon-cyan/10">
+                <span className="text-3xl">{zone.icon}</span>
                 <div>
                   <p className="text-white font-bold text-sm">{zone.name}</p>
                   <p className="text-white/40 text-xs">{zone.detail}</p>
@@ -77,74 +60,16 @@ export default function DeliveryInfo() {
           </div>
         </div>
 
-        {/* Compras $5–$8 */}
-        <div className="card-tech overflow-hidden">
-          <div className="bg-blue-500/10 border-b border-neon-blue/20 px-6 py-4 flex items-center gap-3">
-            <div className="w-2 h-2 bg-neon-blue rounded-full" />
-            <div>
-              <h2 className="text-white font-bold text-lg">Compras de $5 a $8</h2>
-              <p className="text-green-400 text-sm font-semibold">🚚 Envío GRATIS (si hay disponibilidad)</p>
-            </div>
-          </div>
-          <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {freeDeliveryUnder9.map((zone) => (
-              <div key={zone.name} className="flex items-center gap-3 p-3 rounded-xl bg-dark-700/50 border border-neon-cyan/10">
-                <span className="text-2xl">{zone.icon}</span>
-                <div>
-                  <p className="text-white font-bold text-sm">{zone.name}</p>
-                  <p className="text-white/40 text-xs">{zone.detail}</p>
-                </div>
-                <div className="ml-auto">
-                  <span className="text-green-400 text-xs font-bold bg-green-400/10 px-2 py-0.5 rounded-full">GRATIS</span>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="px-6 pb-4">
-            <div className="flex items-start gap-2 bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-3">
-              <Info className="w-4 h-4 text-yellow-400 shrink-0 mt-0.5" />
-              <p className="text-yellow-300/80 text-xs leading-relaxed">
-                Para compras de $5 a $8, el envío gratis está disponible según disponibilidad del día.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Costo adicional */}
-        <div className="card-tech overflow-hidden">
-          <div className="bg-orange-500/10 border-b border-orange-500/20 px-6 py-4 flex items-center gap-3">
-            <div className="w-2 h-2 bg-orange-400 rounded-full" />
-            <div>
-              <h2 className="text-white font-bold text-lg">Entrega con costo adicional</h2>
-              <p className="text-orange-300 text-sm font-semibold">📍 Coordinar precio por WhatsApp</p>
-            </div>
-          </div>
-          <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {extraCostZones.map((zone) => (
-              <div key={zone.name} className="flex items-center gap-3 p-3 rounded-xl bg-dark-700/50 border border-orange-500/10">
-                <span className="text-2xl">{zone.icon}</span>
-                <div>
-                  <p className="text-white font-bold text-sm">{zone.name}</p>
-                  <p className="text-white/40 text-xs">{zone.detail}</p>
-                </div>
-                <div className="ml-auto">
-                  <span className="text-orange-400 text-xs font-bold bg-orange-400/10 px-2 py-0.5 rounded-full">+ COSTO</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Important notice */}
+        {/* Info notice */}
         <div className="card-tech p-6 border-neon-cyan/30">
           <div className="flex items-start gap-3">
             <MapPin className="w-5 h-5 text-neon-cyan shrink-0 mt-0.5" />
             <div>
               <h3 className="text-white font-bold mb-2">Información importante</h3>
               <ul className="space-y-2 text-white/60 text-sm leading-relaxed">
-                <li>• Solo realizamos entregas en las zonas indicadas arriba.</li>
+                <li>• Solo realizamos entregas en Torre Futura y 75 Av. Norte (Gasolinera).</li>
                 <li>• No hacemos envíos a otros departamentos fuera de San Salvador.</li>
-                <li>• Para confirmar disponibilidad y coordinar entrega, contáctanos por WhatsApp.</li>
+                <li>• Para coordinar tu entrega, contáctanos por WhatsApp.</li>
               </ul>
             </div>
           </div>
@@ -152,7 +77,7 @@ export default function DeliveryInfo() {
 
         {/* CTA */}
         <div className="text-center pt-4">
-          <p className="text-white/50 text-sm mb-6">¿Tienes dudas sobre tu zona? Escríbenos directamente.</p>
+          <p className="text-white/50 text-sm mb-6">¿Tienes dudas sobre tu entrega? Escríbenos directamente.</p>
           <div className="flex flex-wrap gap-4 justify-center">
             <a
               href="https://wa.me/50379433144"
