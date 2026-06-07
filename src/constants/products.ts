@@ -18,43 +18,21 @@ export function getBluetoothDynamicDiscount(): number {
 
 export const WHATSAPP_NUMBER = "50379433144";
 
-// Shipping logic:
-// Total >= $9 → free in 6 zones + Escalón extra cost
-// Total >= $5 and < $9 → free in 2 zones (Torre Futura, 75 Av Norte) + Escalón extra cost
-// Escalón always extra cost
+// Shipping: always free in Torre Futura & 75 Av. Norte only
 export interface ShippingZone {
   name: string;
-  cost: number; // 0 = free, > 0 = extra cost
+  cost: number; // 0 = free
 }
 
-export function getShippingZones(total: number): ShippingZone[] {
-  if (total >= 9) {
-    return [
-      { name: "Salvador del Mundo (Gasolinera Texaco)", cost: 0 },
-      { name: "Galerías Escalón", cost: 0 },
-      { name: "Torre Futura", cost: 0 },
-      { name: "75 Av. Norte (Gasolinera)", cost: 0 },
-      { name: "Redondel Masferrer", cost: 0 },
-      { name: "Redondel Luceiro", cost: 0 },
-      { name: "Colonia Escalón", cost: 1.5 },
-    ];
-  }
-  if (total >= 5) {
-    return [
-      { name: "Torre Futura", cost: 0 },
-      { name: "75 Av. Norte (Gasolinera)", cost: 0 },
-      { name: "Colonia Escalón", cost: 1.5 },
-    ];
-  }
+export function getShippingZones(_total: number): ShippingZone[] {
   return [
-    { name: "Colonia Escalón", cost: 1.5 },
+    { name: "Torre Futura", cost: 0 },
+    { name: "75 Av. Norte (Gasolinera)", cost: 0 },
   ];
 }
 
-export function getShippingLabel(total: number): string {
-  if (total >= 9) return "¡Envío gratis en 6 zonas!";
-  if (total >= 5) return "Envío gratis en Torre Futura y 75 Av. Norte";
-  return "Solo entrega en Colonia Escalón (costo adicional)";
+export function getShippingLabel(_total: number): string {
+  return "Envío gratis en Torre Futura y 75 Av. Norte";
 }
 
 export const PRODUCTS: Product[] = [

@@ -147,12 +147,7 @@ export default function DeliveryScheduler() {
   const visibleDays = days.slice(dayIndex, dayIndex + 4);
   const selectedPickerProduct = PICKER_PRODUCTS.find((p) => p.name === form.product);
 
-  const LIMITED_ZONES = ["Torre Futura", "75 Av. Norte (Gasolinera)"];
-  const selectedPrice = selectedPickerProduct?.price ?? null;
-  const availableDeliveryPoints =
-    selectedPrice !== null && selectedPrice < 8
-      ? DELIVERY_POINTS.filter((z) => LIMITED_ZONES.includes(z))
-      : DELIVERY_POINTS;
+  const availableDeliveryPoints = DELIVERY_POINTS;
 
   return (
     <section className="py-20 section-grid" id="agenda">
