@@ -229,6 +229,22 @@ export const PRODUCTS: Product[] = [
     available: true,
     category: "Bocinas",
   },
+  {
+    id: "arnes-reflector",
+    name: "Arnés Reflector de Seguridad",
+    image: "/arnes-reflector.png",
+    price: 3.00,
+    description: "Arnés reflector con tiras 360° para máxima visibilidad de día y de noche. Correas elásticas ajustables, material transpirable y ligero.",
+    features: [
+      "Tiras reflectantes 360° visibles de día y de noche",
+      "Correas elásticas ajustables para mayor comodidad",
+      "Material transpirable, cómodo y ligero",
+      "Ideal para moto, ciclismo, running y caminatas nocturnas",
+      "Resistente al desgaste y a la intemperie",
+    ],
+    available: true,
+    category: "Accesorios Moto",
+  },
 ];
 
 export function getDiscountedPrice(product: Product, dynamicDiscount?: number): number {
