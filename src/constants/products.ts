@@ -18,20 +18,33 @@ export function getBluetoothDynamicDiscount(): number {
 
 export const WHATSAPP_NUMBER = "50379433144";
 
-// Shipping: always free in Torre Futura & 75 Av. Norte only
+// Shipping logic:
+// Total >= $9  → free in 6 zones
+// Total < $9   → free in Torre Futura & 75 Av. Norte
 export interface ShippingZone {
   name: string;
-  cost: number; // 0 = free
+  cost: number; // 0 = free, > 0 = extra cost
 }
 
-export function getShippingZones(_total: number): ShippingZone[] {
+export function getShippingZones(total: number): ShippingZone[] {
+  if (total >= 9) {
+    return [
+      { name: "Salvador del Mundo (Gasolinera Texaco)", cost: 0 },
+      { name: "Galerías Escalón", cost: 0 },
+      { name: "Torre Futura", cost: 0 },
+      { name: "75 Av. Norte (Gasolinera)", cost: 0 },
+      { name: "Redondel Masferrer", cost: 0 },
+      { name: "Redondel Luceiro", cost: 0 },
+    ];
+  }
   return [
     { name: "Torre Futura", cost: 0 },
     { name: "75 Av. Norte (Gasolinera)", cost: 0 },
   ];
 }
 
-export function getShippingLabel(_total: number): string {
+export function getShippingLabel(total: number): string {
+  if (total >= 9) return "¡Envío gratis en 6 zonas!";
   return "Envío gratis en Torre Futura y 75 Av. Norte";
 }
 
