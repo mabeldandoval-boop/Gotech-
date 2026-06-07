@@ -234,6 +234,7 @@ export const PRODUCTS: Product[] = [
     name: "Arnés Reflector de Seguridad",
     image: "/arnes-reflector.png",
     price: 3.00,
+    stock: 10,
     description: "Arnés reflector con tiras 360° para máxima visibilidad de día y de noche. Correas elásticas ajustables, material transpirable y ligero.",
     features: [
       "Tiras reflectantes 360° visibles de día y de noche",
