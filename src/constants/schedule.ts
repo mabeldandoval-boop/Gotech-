@@ -38,8 +38,12 @@ export function getHoursForDay(date: Date) {
 }
 
 export const DELIVERY_POINTS = [
+  "Salvador del Mundo (Gasolinera Texaco)",
+  "Galerías Escalón",
   "Torre Futura",
   "75 Av. Norte (Gasolinera)",
+  "Redondel Masferrer",
+  "Redondel Luceiro",
 ];
 
 export function getSlotKey(date: Date, hour: number): string {
