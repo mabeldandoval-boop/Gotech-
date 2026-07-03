@@ -1,15 +1,17 @@
 import { Link } from "react-router-dom";
 import { ShoppingCart, CheckCircle, Zap } from "lucide-react";
-import { PRODUCTS, getDiscountedPrice, getBluetoothDynamicDiscount } from "@/constants/products";
+import { getDiscountedPrice, getBluetoothDynamicDiscount } from "@/constants/products";
 import { useCart } from "@/hooks/useCart";
+import { useProducts } from "@/hooks/useProducts";
+import { Product } from "@/types";
 
-function getDailyProduct() {
+function getDailyProduct(products: Product[]) {
   // Uses the day of year to deterministically pick a product that rotates daily
   const now = new Date();
   const start = new Date(now.getFullYear(), 0, 0);
   const diff = now.getTime() - start.getTime();
   const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
-  return PRODUCTS[dayOfYear % PRODUCTS.length];
+  return products[dayOfYear % products.length];
 }
 
 function getDayName() {
@@ -22,7 +24,8 @@ function formatDate() {
 }
 
 export default function ProductOfTheDay() {
-  const product = getDailyProduct();
+  const { products } = useProducts();
+  const product = getDailyProduct(products);
   const { addToCart, items } = useCart();
   const inCart = items.find((i) => i.product.id === product.id);
   const btDiscount = getBluetoothDynamicDiscount();

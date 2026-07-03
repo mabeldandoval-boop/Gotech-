@@ -223,6 +223,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "arnes-reflector",
     name: "Arnés Reflector de Seguridad",
+    shortName: "Arnés Reflector",
     image: "/arnes-reflector.png",
     price: 3.00,
     stock: 10,

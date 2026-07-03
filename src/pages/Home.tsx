@@ -1,14 +1,15 @@
 import { Link } from "react-router-dom";
 import { Zap, Truck, ChevronRight, Tag } from "lucide-react";
 import heroBanner from "@/assets/hero-banner.jpg";
-import { PRODUCTS } from "@/constants/products";
 import ProductCard from "@/components/features/ProductCard";
 import ReviewsSection from "@/components/features/ReviewsSection";
 import ProductOfTheDay from "@/components/features/ProductOfTheDay";
 import BundlesSection from "@/components/features/BundlesSection";
 import DeliveryScheduler from "@/components/features/DeliveryScheduler";
+import { useProducts } from "@/hooks/useProducts";
 
 export default function Home() {
+  const { products: PRODUCTS } = useProducts();
   return (
     <div className="pt-24">
       {/* ── HERO ── */}

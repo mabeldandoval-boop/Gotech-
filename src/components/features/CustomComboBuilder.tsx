@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { ShoppingCart, Zap, Plus, Minus, Check, PackagePlus, X } from "lucide-react";
-import { PRODUCTS, getDiscountedPrice, WHATSAPP_NUMBER } from "@/constants/products";
+import { getDiscountedPrice, WHATSAPP_NUMBER } from "@/constants/products";
 import { useCart } from "@/hooks/useCart";
+import { useProducts } from "@/hooks/useProducts";
 
 const COMBO_DISCOUNT = 0.80;
 const MIN_PRODUCTS = 2;
 
 export default function CustomComboBuilder() {
   const { addCustomComboToCart, openCart } = useCart();
+  const { products: PRODUCTS } = useProducts();
   const [selected, setSelected] = useState<string[]>([]);
 
   const toggle = (id: string) => {

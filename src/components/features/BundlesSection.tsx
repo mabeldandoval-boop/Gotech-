@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
 import { Zap, ShoppingCart, Package } from "lucide-react";
 import { BUNDLES, buildBundleWhatsAppMessage } from "@/constants/bundles";
-import { PRODUCTS, getDiscountedPrice } from "@/constants/products";
+import { getDiscountedPrice } from "@/constants/products";
 import { useCart } from "@/hooks/useCart";
+import { useProducts } from "@/hooks/useProducts";
 
 export default function BundlesSection() {
   const { address, addBundle } = useCart();
+  const { products: PRODUCTS } = useProducts();
 
   return (
     <section id="combos" className="py-20 bg-dark-800">

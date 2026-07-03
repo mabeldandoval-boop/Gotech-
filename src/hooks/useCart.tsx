@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, useCallback, ReactNode } from "react";
 import { Product } from "@/types";
 import { PromoCode, validatePromoCode } from "@/constants/promoCodes";
-import { PRODUCTS } from "@/constants/products";
 import { Bundle } from "@/constants/bundles";
+import { useProducts } from "@/hooks/useProducts";
 
 export interface CartItem {
   product: Product;
@@ -38,6 +38,7 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const { products: PRODUCTS } = useProducts();
   const [items, setItems] = useState<CartItem[]>([]);
   const [address, setAddress] = useState("");
   const [isOpen, setIsOpen] = useState(false);

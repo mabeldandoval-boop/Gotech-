@@ -1,0 +1,3 @@
+- [Secret handling in shell debugging](secret-debugging.md) — never use node -e / JSON.stringify to inspect a secret's actual value, even for debugging comparisons.
+- [Git push restrictions in main agent](git-push-restrictions.md) — `git add/commit/push` are blocked as destructive in the main-agent sandbox; use project_tasks or a REST-API-based push instead.
+- [Vercel SPA rewrite + serverless API coexistence](vercel-spa-api-rewrites.md) — a catch-all `rewrites` to index.html in vercel.json does not break `/api/*` serverless functions; Vercel checks functions/static files before applying rewrites.

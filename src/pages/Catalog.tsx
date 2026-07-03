@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Search, Filter } from "lucide-react";
-import { PRODUCTS } from "@/constants/products";
 import ProductCard from "@/components/features/ProductCard";
+import { useProducts } from "@/hooks/useProducts";
 
 const categories = ["Todos", "Bluetooth", "Memorias", "Controles", "Accesorios Moto", "Accesorios Auto"];
 
 export default function Catalog() {
+  const { products: PRODUCTS } = useProducts();
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("Todos");
 

@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { Zap, Truck, Tag, ChevronRight, Star } from "lucide-react";
-import { PRODUCTS, getDiscountedPrice, getBluetoothDynamicDiscount } from "@/constants/products";
+import { getDiscountedPrice, getBluetoothDynamicDiscount } from "@/constants/products";
 import ProductCard from "@/components/features/ProductCard";
+import { useProducts } from "@/hooks/useProducts";
 
 // Products that always have free shipping regardless of total
 const FREE_SHIPPING_PRODUCT_IDS = [
@@ -16,6 +17,7 @@ const FREE_SHIPPING_PRODUCT_IDS = [
 ];
 
 export default function Offers() {
+  const { products: PRODUCTS } = useProducts();
   const btDiscount = getBluetoothDynamicDiscount();
   const freeShippingProducts = PRODUCTS.filter((p) =>
     FREE_SHIPPING_PRODUCT_IDS.includes(p.id)

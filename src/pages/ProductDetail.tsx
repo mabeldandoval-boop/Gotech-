@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { CheckCircle, ChevronLeft, MessageCircle, Truck, Zap, MapPin, ShoppingCart } from "lucide-react";
-import { PRODUCTS, getDiscountedPrice, getBluetoothDynamicDiscount } from "@/constants/products";
+import { getDiscountedPrice, getBluetoothDynamicDiscount } from "@/constants/products";
 import { useCart } from "@/hooks/useCart";
+import { useProducts } from "@/hooks/useProducts";
 import AddressPickerModal from "@/components/features/AddressPickerModal";
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
+  const { products: PRODUCTS } = useProducts();
   const product = PRODUCTS.find((p) => p.id === id);
   const { addToCart, items, address, setAddress, openCart } = useCart();
   const [showAddressPicker, setShowAddressPicker] = useState(false);

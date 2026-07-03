@@ -1,8 +1,11 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useState, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, Zap, ShoppingCart } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import CartDrawer from "@/components/features/CartDrawer";
+
+const HIDDEN_TRIGGER_TAPS = 5;
+const HIDDEN_TRIGGER_WINDOW_MS = 2000;
 
 const navLinks = [
   { href: "/catalogo", label: "Catálogo" },
@@ -15,18 +18,46 @@ const navLinks = [
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { totalItems, openCart, isOpen } = useCart();
+  const tapCount = useRef(0);
+  const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleHiddenTrigger = () => {
+    tapCount.current += 1;
+    if (tapTimer.current) clearTimeout(tapTimer.current);
+    tapTimer.current = setTimeout(() => {
+      tapCount.current = 0;
+    }, HIDDEN_TRIGGER_WINDOW_MS);
+    if (tapCount.current >= HIDDEN_TRIGGER_TAPS) {
+      tapCount.current = 0;
+      if (tapTimer.current) clearTimeout(tapTimer.current);
+      navigate("/gt-acceso");
+    }
+  };
 
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-50 bg-dark-900/95 backdrop-blur-md border-b border-neon-cyan/20">
         <div className="max-w-6xl mx-auto px-4 h-24 flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center group">
+          <Link to="/" className="flex items-center group relative">
             <img
               src="/gotech-logo.png"
               alt="GoTech"
               className="h-24 w-auto object-contain drop-shadow-[0_0_12px_rgba(0,207,255,0.6)]"
+            />
+            {/* Hidden admin trigger: tap 5x quickly in the bottom-left corner of the logo */}
+            <button
+              type="button"
+              aria-hidden="true"
+              tabIndex={-1}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleHiddenTrigger();
+              }}
+              className="absolute bottom-0 left-0 w-4 h-4 opacity-0 cursor-default"
             />
           </Link>
 

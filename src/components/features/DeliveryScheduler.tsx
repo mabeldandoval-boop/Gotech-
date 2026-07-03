@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Calendar, Clock, CheckCircle2, MessageCircle, X, User, Package, MapPin, ChevronLeft, ChevronRight, Phone, Truck } from "lucide-react";
 import {
   Booking,
@@ -13,8 +13,10 @@ import {
   buildScheduleWhatsApp,
   getHoursForDay,
 } from "@/constants/schedule";
-import { WHATSAPP_NUMBER, PRODUCTS } from "@/constants/products";
+import { WHATSAPP_NUMBER } from "@/constants/products";
 import { BUNDLES } from "@/constants/bundles";
+import { useProducts } from "@/hooks/useProducts";
+import { Product } from "@/types";
 
 type Step = "calendar" | "form" | "whatsapp" | "confirm";
 
@@ -28,31 +30,33 @@ interface PickerProduct {
   badge?: string;
 }
 
-const PICKER_PRODUCTS: PickerProduct[] = [
-  ...PRODUCTS.map((p) => ({
-    id: p.id,
-    name: p.name,
-    price: p.price,
-    image: p.image,
-    isBundle: false,
-    badge: p.badge,
-  })),
-  ...BUNDLES.map((b) => {
-    const imgs = b.productIds
-      .map((id) => PRODUCTS.find((p) => p.id === id)?.image)
-      .filter(Boolean) as string[];
-    return {
-      id: b.id,
-      name: b.name,
-      price: b.bundlePrice,
-      image: imgs[0] ?? null,
-      images: imgs,
-      isBundle: true,
-      badge: b.badge,
-    };
-  }),
-  { id: "otro", name: "Otro producto", price: null, image: null, isBundle: false },
-];
+function buildPickerProducts(PRODUCTS: Product[]): PickerProduct[] {
+  return [
+    ...PRODUCTS.map((p) => ({
+      id: p.id,
+      name: p.name,
+      price: p.price,
+      image: p.image,
+      isBundle: false,
+      badge: p.badge,
+    })),
+    ...BUNDLES.map((b) => {
+      const imgs = b.productIds
+        .map((id) => PRODUCTS.find((p) => p.id === id)?.image)
+        .filter(Boolean) as string[];
+      return {
+        id: b.id,
+        name: b.name,
+        price: b.bundlePrice,
+        image: imgs[0] ?? null,
+        images: imgs,
+        isBundle: true,
+        badge: b.badge,
+      };
+    }),
+    { id: "otro", name: "Otro producto", price: null, image: null, isBundle: false },
+  ];
+}
 
 const DELIVERY_POINT_ICONS: Record<string, string> = {
   "Torre Futura": "🏢",
@@ -65,6 +69,8 @@ const DELIVERY_POINT_ICONS: Record<string, string> = {
 };
 
 export default function DeliveryScheduler() {
+  const { products } = useProducts();
+  const PICKER_PRODUCTS = useMemo(() => buildPickerProducts(products), [products]);
   const [days] = useState(() => getNextDays(7));
   const [selectedDay, setSelectedDay] = useState<Date>(days[0]);
   const [selectedHour, setSelectedHour] = useState<number | null>(null);
