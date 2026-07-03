@@ -1,4 +1,4 @@
-modules = ["python-3.11", "nodejs-20"]
+modules = ["python-3.11", "nodejs-20", "postgresql-16"]
 [agent]
 expertMode = true
 stack = "BEST_EFFORT_FALLBACK"
@@ -38,3 +38,8 @@ externalPort = 80
 deploymentTarget = "static"
 build = ["npm", "run", "build"]
 publicDir = "dist"
+
+[userenv]
+
+[userenv.shared]
+ADMIN_JWT_SECRET = "fc87d1d5f4666e32eb1b807f60a8ddb706631ea3d519e98e009a826cf68ad4274696ba78fb21992dcc361648a8ec6d4e"
