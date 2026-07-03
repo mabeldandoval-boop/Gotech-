@@ -1,11 +1,8 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, Zap, ShoppingCart } from "lucide-react";
+import { Menu, X, Zap, ShoppingCart, Lock } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import CartDrawer from "@/components/features/CartDrawer";
-
-const HIDDEN_TRIGGER_TAPS = 5;
-const HIDDEN_TRIGGER_WINDOW_MS = 2000;
 
 const navLinks = [
   { href: "/catalogo", label: "Catálogo" },
@@ -18,23 +15,7 @@ const navLinks = [
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
   const { totalItems, openCart, isOpen } = useCart();
-  const tapCount = useRef(0);
-  const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const handleHiddenTrigger = () => {
-    tapCount.current += 1;
-    if (tapTimer.current) clearTimeout(tapTimer.current);
-    tapTimer.current = setTimeout(() => {
-      tapCount.current = 0;
-    }, HIDDEN_TRIGGER_WINDOW_MS);
-    if (tapCount.current >= HIDDEN_TRIGGER_TAPS) {
-      tapCount.current = 0;
-      if (tapTimer.current) clearTimeout(tapTimer.current);
-      navigate("/gt-acceso");
-    }
-  };
 
   return (
     <>
@@ -46,18 +27,6 @@ export default function Navbar() {
               src="/gotech-logo.png"
               alt="GoTech"
               className="h-24 w-auto object-contain drop-shadow-[0_0_12px_rgba(0,207,255,0.6)]"
-            />
-            {/* Hidden admin trigger: tap 5x quickly in the bottom-left corner of the logo */}
-            <button
-              type="button"
-              aria-hidden="true"
-              tabIndex={-1}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleHiddenTrigger();
-              }}
-              className="absolute bottom-0 left-0 w-4 h-4 opacity-0 cursor-default"
             />
           </Link>
 
@@ -112,6 +81,15 @@ export default function Navbar() {
             >
               WhatsApp
             </a>
+
+            <Link
+              to="/gt-acceso"
+              className="flex items-center gap-1.5 text-white/40 hover:text-neon-cyan text-xs font-semibold uppercase tracking-wider transition-colors"
+              aria-label="Login administrador"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              Admin
+            </Link>
           </div>
 
           {/* Mobile: Cart + Toggle */}
@@ -176,6 +154,14 @@ export default function Navbar() {
             >
               💬 Contactar por WhatsApp
             </a>
+            <Link
+              to="/gt-acceso"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              Admin
+            </Link>
           </div>
         )}
       </nav>
