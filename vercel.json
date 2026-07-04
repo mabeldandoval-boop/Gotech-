@@ -1,4 +1,4 @@
 {
-  "installCommand": "npm ci --no-audit --no-fund || npm install --no-audit --no-fund",
+  "installCommand": "npm install -g pnpm@10 && pnpm install --no-frozen-lockfile",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
