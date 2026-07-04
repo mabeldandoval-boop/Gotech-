@@ -1,5 +1,4 @@
 import { getAllProducts, updateProduct } from "../api/_lib/productsCore.js";
-import { checkLockout, registerFailure } from "../api/_lib/lockout.js";
 import { signAdminToken, verifyAdminToken } from "../api/_lib/auth.js";
 
 function readJsonBody(req) {
@@ -57,28 +56,20 @@ export function devApiPlugin() {
 
           if (pathname === "/api/admin/login" && req.method === "POST") {
             const body = await readJsonBody(req);
-            const { password, deviceId } = body;
-            if (!deviceId) return send(res, 400, { error: "deviceId requerido" });
-            const lock = await checkLockout(deviceId);
-            if (lock.locked) return send(res, 423, { error: "locked", until: lock.until });
+            const { password } = body;
             if (!password || password !== process.env.ADMIN_PASSWORD) {
-              const until = await registerFailure(deviceId);
-              return send(res, 401, { error: "Contraseña incorrecta. Acceso bloqueado por 90 horas.", until });
+              return send(res, 401, { error: "Contraseña incorrecta" });
             }
             return send(res, 200, { ok: true, question: "¿Quién es el dueño?" });
           }
 
           if (pathname === "/api/admin/verify" && req.method === "POST") {
             const body = await readJsonBody(req);
-            const { answer, deviceId } = body;
-            if (!deviceId) return send(res, 400, { error: "deviceId requerido" });
-            const lock = await checkLockout(deviceId);
-            if (lock.locked) return send(res, 423, { error: "locked", until: lock.until });
+            const { answer } = body;
             const expected = (process.env.ADMIN_SECURITY_ANSWER || "").trim().toLowerCase();
             const given = (answer || "").trim().toLowerCase();
             if (!given || !expected || given !== expected) {
-              const until = await registerFailure(deviceId);
-              return send(res, 401, { error: "Respuesta incorrecta. Acceso bloqueado por 90 horas.", until });
+              return send(res, 401, { error: "Respuesta incorrecta" });
             }
             const token = signAdminToken();
             return send(res, 200, { ok: true, token });
