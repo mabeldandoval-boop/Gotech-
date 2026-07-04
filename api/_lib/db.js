@@ -4,11 +4,20 @@ const { Pool } = pg;
 
 let pool;
 
+function resolveConnectionString() {
+  return (
+    process.env.Database_POSTGRES_URL ||
+    process.env.Database_DATABASE_URL ||
+    process.env.DATABASE_URL
+  );
+}
+
 export function getPool() {
   if (!pool) {
+    const connectionString = resolveConnectionString();
     pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: process.env.DATABASE_URL?.includes("localhost") ? false : { rejectUnauthorized: false },
+      connectionString,
+      ssl: connectionString?.includes("localhost") ? false : { rejectUnauthorized: false },
     });
   }
   return pool;
