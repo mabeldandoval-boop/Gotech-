@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  LogOut, Package, RefreshCw, Plus, Trash2, Save, Tag, FolderOpen, X, ChevronDown, ChevronUp,
+  LogOut, Package, RefreshCw, Plus, Trash2, Save, Tag, FolderOpen, X, ChevronDown, ChevronUp, ImagePlus,
 } from "lucide-react";
 import { Product, Category, PromoCode, ShippingZone } from "@/types";
 import { getAdminToken, clearAdminToken, isAdminAuthenticated } from "@/lib/adminAuth";
@@ -99,6 +99,13 @@ export default function AdminProducts() {
 
   /* --- delete confirm --- */
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+
+  /* --- image upload helper --- */
+  const readImageAsDataUrl = (file: File, onDone: (dataUrl: string) => void) => {
+    const reader = new FileReader();
+    reader.onload = () => onDone(reader.result as string);
+    reader.readAsDataURL(file);
+  };
 
   /* ── auth guard ─────────────────────────────────────────────────────── */
   useEffect(() => {
@@ -425,8 +432,23 @@ export default function AdminProducts() {
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className={labelCls}>URL de imagen</label>
-                    <input type="url" placeholder="https://..." className={inputCls} value={newProduct.image || ""} onChange={(e) => setNewProduct((p) => ({ ...p, image: e.target.value }))} />
+                    <label className={labelCls}>Imagen del producto</label>
+                    <div className="flex items-center gap-3">
+                      <input type="url" placeholder="URL de imagen (https://...)" className={`${inputCls} flex-1`} value={newProduct.image || ""} onChange={(e) => setNewProduct((p) => ({ ...p, image: e.target.value }))} />
+                      <label className="flex items-center gap-1.5 shrink-0 px-3 py-2 rounded-lg border border-neon-cyan/20 text-neon-cyan/80 hover:border-neon-cyan/60 hover:text-neon-cyan text-xs font-bold cursor-pointer transition-all">
+                        <ImagePlus className="w-3.5 h-3.5" /> Galería
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) readImageAsDataUrl(file, (dataUrl) => setNewProduct((p) => ({ ...p, image: dataUrl })));
+                            e.target.value = "";
+                          }}
+                        />
+                      </label>
+                    </div>
                   </div>
                   {newProduct.image && (
                     <div className="sm:col-span-2">
@@ -574,9 +596,29 @@ export default function AdminProducts() {
                                 {categories.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
                               </select>
                             </div>
-                            <div>
-                              <label className={labelCls}>URL de imagen</label>
-                              <input type="url" className={inputCls} value={getVal(product, "image") as string} onChange={(e) => setField(product.id, "image", e.target.value)} />
+                            <div className="sm:col-span-2">
+                              <label className={labelCls}>Imagen del producto</label>
+                              <div className="flex items-center gap-3">
+                                <img
+                                  src={getVal(product, "image") as string}
+                                  alt={product.name}
+                                  className="w-12 h-12 object-contain rounded-lg bg-dark-700 border border-neon-cyan/10 shrink-0"
+                                />
+                                <input type="url" placeholder="URL de imagen (https://...)" className={`${inputCls} flex-1`} value={getVal(product, "image") as string} onChange={(e) => setField(product.id, "image", e.target.value)} />
+                                <label className="flex items-center gap-1.5 shrink-0 px-3 py-2 rounded-lg border border-neon-cyan/20 text-neon-cyan/80 hover:border-neon-cyan/60 hover:text-neon-cyan text-xs font-bold cursor-pointer transition-all">
+                                  <ImagePlus className="w-3.5 h-3.5" /> Galería
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) readImageAsDataUrl(file, (dataUrl) => setField(product.id, "image", dataUrl));
+                                      e.target.value = "";
+                                    }}
+                                  />
+                                </label>
+                              </div>
                             </div>
                             <div className="sm:col-span-2">
                               <label className={labelCls}>Descripción</label>
