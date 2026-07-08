@@ -10,6 +10,13 @@ async function ensureTable(pool) {
   `);
 }
 
+export async function getCategoryById(id) {
+  const pool = getPool();
+  await ensureTable(pool);
+  const { rows } = await pool.query("SELECT * FROM categories WHERE id = $1", [id]);
+  return rows.length ? { id: String(rows[0].id), name: rows[0].name } : null;
+}
+
 export async function getAllCategories() {
   const pool = getPool();
   await ensureTable(pool);
