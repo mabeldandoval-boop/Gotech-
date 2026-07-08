@@ -295,7 +295,15 @@ export default function Home() {
                 WhatsApp
               </a>
             </div>
-            <p className="text-white/30 text-xs">© 2026 GoTech SV · San Salvador</p>
+            <div className="flex items-center gap-3">
+              <p className="text-white/30 text-xs">© 2026 GoTech SV · San Salvador</p>
+              <Link
+                to="/gt-acceso"
+                className="text-white/10 hover:text-white/25 text-[10px] font-mono tracking-widest transition-colors duration-300 select-none"
+              >
+                KNAS
+              </Link>
+            </div>
           </div>
         </div>
       </footer>
