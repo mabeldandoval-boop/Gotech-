@@ -208,14 +208,17 @@ export default function AdminProducts() {
         body: JSON.stringify(body),
       });
       if (res.status === 401) { clearAdminToken(); navigate("/gt-acceso"); return; }
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Error al crear producto");
+      }
       await refreshProducts();
       setNewProduct(blankProduct());
       setShowCreateProduct(false);
       setCreateMsg("✅ Producto creado");
       setTimeout(() => setCreateMsg(""), 3000);
-    } catch {
-      setCreateMsg("❌ Error al crear producto");
+    } catch (err: any) {
+      setCreateMsg(`❌ ${err?.message || "Error al crear producto"}`);
     } finally {
       setCreating(false);
     }
