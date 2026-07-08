@@ -25,6 +25,13 @@ function mapRow(r) {
   };
 }
 
+export async function getPromoCodeById(id) {
+  const pool = getPool();
+  await ensureTable(pool);
+  const { rows } = await pool.query("SELECT * FROM promo_codes WHERE id = $1", [id]);
+  return rows.length ? mapRow(rows[0]) : null;
+}
+
 export async function getAllPromoCodes() {
   const pool = getPool();
   await ensureTable(pool);
