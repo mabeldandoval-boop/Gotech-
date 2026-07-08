@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { getPool } from "./db.js";
 
 async function ensureColumns(pool) {
@@ -58,12 +59,13 @@ export async function createProduct(fields) {
 
   const { rows } = await pool.query(
     `INSERT INTO products
-       (name, short_name, price, original_price, discount, stock, image, badge,
+       (id, name, short_name, price, original_price, discount, stock, image, badge,
         description, features, available, category, shipping_zones, promo_code, sort_order)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11, $12, $13::jsonb, $14,
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11::jsonb, $12, $13, $14::jsonb, $15,
              (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM products))
      RETURNING *`,
     [
+      randomUUID(),
       name,
       shortName,
       price,
