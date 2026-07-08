@@ -1,5 +1,14 @@
 import { requireAdmin } from "../_lib/auth.js";
 import { getAllPromoCodes, createPromoCode } from "../_lib/promoCodesCore.js";
+import { logAction } from "../_lib/auditLog.js";
+
+function getClientIp(req) {
+  return (
+    req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
+    req.socket?.remoteAddress ||
+    "unknown"
+  );
+}
 
 export default async function handler(req, res) {
   // All promo-code endpoints require admin (listing codes exposes discount values)
@@ -19,6 +28,7 @@ export default async function handler(req, res) {
     if (!code?.trim()) return res.status(400).json({ error: "El código es requerido" });
     try {
       const promoCode = await createPromoCode(req.body);
+      await logAction("CREATE_PROMO_CODE", "promo_code", String(promoCode.id), promoCode.code, getClientIp(req));
       return res.status(201).json({ promoCode });
     } catch (err) {
       console.error("createPromoCode error:", err);
