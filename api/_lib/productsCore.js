@@ -29,6 +29,13 @@ export function mapRow(r) {
   };
 }
 
+export async function getProductById(id) {
+  const pool = getPool();
+  await ensureColumns(pool);
+  const { rows } = await pool.query("SELECT * FROM products WHERE id = $1", [id]);
+  return rows.length ? mapRow(rows[0]) : null;
+}
+
 export async function getAllProducts() {
   const pool = getPool();
   await ensureColumns(pool);
