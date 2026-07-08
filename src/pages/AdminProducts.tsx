@@ -119,12 +119,13 @@ export default function AdminProducts() {
   const fetchPromoCodes = useCallback(async () => {
     setPromoLoading(true);
     try {
-      const res = await fetch("/api/promo-codes");
+      const res = await fetch("/api/promo-codes", { headers: authHeaders() });
+      if (res.status === 401) { clearAdminToken(); navigate("/gt-acceso"); return; }
       if (res.ok) setPromoCodes((await res.json()).promoCodes || []);
     } finally {
       setPromoLoading(false);
     }
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     fetchCategories();
