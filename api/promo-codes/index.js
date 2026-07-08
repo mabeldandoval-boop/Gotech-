@@ -2,6 +2,9 @@ import { requireAdmin } from "../_lib/auth.js";
 import { getAllPromoCodes, createPromoCode } from "../_lib/promoCodesCore.js";
 
 export default async function handler(req, res) {
+  // All promo-code endpoints require admin (listing codes exposes discount values)
+  if (!requireAdmin(req)) return res.status(401).json({ error: "No autorizado" });
+
   if (req.method === "GET") {
     try {
       const promoCodes = await getAllPromoCodes();
@@ -12,7 +15,6 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "POST") {
-    if (!requireAdmin(req)) return res.status(401).json({ error: "No autorizado" });
     const { code } = req.body || {};
     if (!code?.trim()) return res.status(400).json({ error: "El código es requerido" });
     try {
