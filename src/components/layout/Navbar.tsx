@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, Zap, ShoppingCart, Lock } from "lucide-react";
+import { Menu, X, Zap, ShoppingCart } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import CartDrawer from "@/components/features/CartDrawer";
 
@@ -81,15 +81,6 @@ export default function Navbar() {
             >
               WhatsApp
             </a>
-
-            <Link
-              to="/gt-acceso"
-              className="flex items-center gap-1.5 text-white/40 hover:text-neon-cyan text-xs font-semibold uppercase tracking-wider transition-colors"
-              aria-label="Login administrador"
-            >
-              <Lock className="w-3.5 h-3.5" />
-              Admin
-            </Link>
           </div>
 
           {/* Mobile: Cart + Toggle */}
@@ -154,14 +145,6 @@ export default function Navbar() {
             >
               💬 Contactar por WhatsApp
             </a>
-            <Link
-              to="/gt-acceso"
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-2 px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider"
-            >
-              <Lock className="w-3.5 h-3.5" />
-              Admin
-            </Link>
           </div>
         )}
       </nav>
