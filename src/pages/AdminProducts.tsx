@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  LogOut, Package, RefreshCw, Plus, Trash2, Save, Tag, FolderOpen, X, ChevronDown, ChevronUp, ImagePlus,
+  LogOut, Package, RefreshCw, Plus, Trash2, Save, Tag, FolderOpen, X, ChevronDown, ChevronUp, ImagePlus, History,
 } from "lucide-react";
 import { Product, Category, PromoCode, ShippingZone } from "@/types";
 import { getAdminToken, clearAdminToken, isAdminAuthenticated } from "@/lib/adminAuth";
@@ -17,7 +17,20 @@ const SHIPPING_ZONE_NAMES = [
   "Redondel Luceiro",
 ];
 
-type Tab = "products" | "discounts" | "categories";
+type Tab = "products" | "discounts" | "categories" | "history";
+
+interface AuditEntry {
+  id: number;
+  description: string;
+  action: string;
+  entity_type: string | null;
+  entity_name: string | null;
+  field: string | null;
+  old_value: string | null;
+  new_value: string | null;
+  ip: string | null;
+  created_at: string;
+}
 
 /* ─── helpers ────────────────────────────────────────────────────────────── */
 function authHeaders() {
@@ -100,6 +113,11 @@ export default function AdminProducts() {
   /* --- delete confirm --- */
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
+  /* --- audit history state --- */
+  const [auditEntries, setAuditEntries] = useState<AuditEntry[]>([]);
+  const [auditLoading, setAuditLoading] = useState(false);
+  const [auditLoaded, setAuditLoaded] = useState(false);
+
   /* --- image upload helper --- */
   const readImageAsDataUrl = (file: File, onDone: (dataUrl: string) => void) => {
     const reader = new FileReader();
@@ -122,6 +140,18 @@ export default function AdminProducts() {
       setCatLoading(false);
     }
   }, []);
+
+  const fetchAuditLog = useCallback(async () => {
+    setAuditLoading(true);
+    try {
+      const res = await fetch("/api/admin/audit-log", { headers: authHeaders() });
+      if (res.status === 401) { clearAdminToken(); navigate("/gt-acceso"); return; }
+      if (res.ok) setAuditEntries((await res.json()).entries || []);
+    } finally {
+      setAuditLoading(false);
+      setAuditLoaded(true);
+    }
+  }, [navigate]);
 
   const fetchPromoCodes = useCallback(async () => {
     setPromoLoading(true);
@@ -335,7 +365,7 @@ export default function AdminProducts() {
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => { refreshProducts(); fetchCategories(); fetchPromoCodes(); }}
+              onClick={() => { refreshProducts(); fetchCategories(); fetchPromoCodes(); if (tab === "history") fetchAuditLog(); }}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-neon-cyan/20 text-neon-cyan/70 hover:border-neon-cyan/60 hover:text-neon-cyan text-xs font-bold transition-all"
             >
               <RefreshCw className="w-3.5 h-3.5" /> Actualizar
@@ -356,11 +386,12 @@ export default function AdminProducts() {
               { key: "products", label: "Productos", icon: Package },
               { key: "discounts", label: "Descuentos", icon: Tag },
               { key: "categories", label: "Categorías", icon: FolderOpen },
+              { key: "history", label: "Historial", icon: History },
             ] as { key: Tab; label: string; icon: React.ElementType }[]
           ).map(({ key, label, icon: Icon }) => (
             <button
               key={key}
-              onClick={() => setTab(key)}
+              onClick={() => { setTab(key); if (key === "history" && !auditLoaded) fetchAuditLog(); }}
               className={`flex items-center gap-1.5 px-5 py-2.5 text-xs font-bold rounded-t-lg transition-all border-b-2 -mb-px ${
                 tab === key
                   ? "border-neon-cyan text-neon-cyan bg-neon-cyan/5"
@@ -836,6 +867,86 @@ export default function AdminProducts() {
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ══════════════════════════════════════════════════════════════
+            TAB: HISTORIAL
+        ══════════════════════════════════════════════════════════════ */}
+        {tab === "history" && (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-white/40 text-sm">
+                {auditLoading ? "Cargando..." : `${auditEntries.length} registros`}
+              </p>
+              <button
+                onClick={fetchAuditLog}
+                disabled={auditLoading}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-neon-cyan/20 text-neon-cyan/70 hover:border-neon-cyan/60 hover:text-neon-cyan text-xs font-bold transition-all disabled:opacity-40"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${auditLoading ? "animate-spin" : ""}`} /> Actualizar
+              </button>
+            </div>
+
+            {auditLoading && !auditEntries.length ? (
+              <div className="card-tech p-8 text-center">
+                <RefreshCw className="w-6 h-6 text-neon-cyan/40 animate-spin mx-auto mb-3" />
+                <p className="text-white/30 text-sm">Cargando historial...</p>
+              </div>
+            ) : !auditLoaded ? (
+              <div className="card-tech p-8 text-center">
+                <History className="w-8 h-8 text-white/10 mx-auto mb-3" />
+                <p className="text-white/30 text-sm">El historial se carga al abrir esta pestaña.</p>
+              </div>
+            ) : auditEntries.length === 0 ? (
+              <div className="card-tech p-8 text-center">
+                <History className="w-8 h-8 text-white/10 mx-auto mb-3" />
+                <p className="text-white/30 text-sm">No hay registros de cambios todavía.</p>
+                <p className="text-white/20 text-xs mt-1">Los cambios aparecerán aquí cuando edites productos, categorías o descuentos.</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {auditEntries.map((entry) => {
+                  const date = new Date(entry.created_at);
+                  const dateStr = date.toLocaleDateString("es-SV", {
+                    day: "2-digit", month: "short", year: "numeric",
+                  });
+                  const timeStr = date.toLocaleTimeString("es-SV", {
+                    hour: "2-digit", minute: "2-digit",
+                  });
+                  const isLogin  = entry.action === "ADMIN_LOGIN";
+                  const isDelete = entry.action.startsWith("DELETE_");
+                  const isCreate = entry.action.startsWith("CREATE_");
+
+                  return (
+                    <div
+                      key={entry.id}
+                      className="card-tech px-4 py-3 flex items-start gap-3"
+                    >
+                      {/* color dot */}
+                      <span
+                        className={`mt-1 shrink-0 w-2 h-2 rounded-full ${
+                          isLogin  ? "bg-neon-cyan"  :
+                          isDelete ? "bg-red-400"    :
+                          isCreate ? "bg-green-400"  :
+                          "bg-yellow-400"
+                        }`}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white text-sm leading-snug">{entry.description}</p>
+                        {entry.ip && !isLogin && (
+                          <p className="text-white/20 text-[10px] mt-0.5">IP: {entry.ip}</p>
+                        )}
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <p className="text-white/40 text-[10px] font-mono">{timeStr}</p>
+                        <p className="text-white/25 text-[10px] font-mono">{dateStr}</p>
+                      </div>
                     </div>
                   );
                 })}
