@@ -38,10 +38,13 @@ export async function createPromoCode(fields) {
   const {
     code = "",
     label = "",
-    discountPercent = null,
-    discountFixed = null,
+    discountPercent,
+    discountFixed,
     description = null,
   } = fields || {};
+
+  const pct = discountPercent != null && discountPercent !== "" ? Number(discountPercent) : null;
+  const fix = discountFixed   != null && discountFixed   !== "" ? Number(discountFixed)   : null;
 
   const { rows } = await pool.query(
     `INSERT INTO promo_codes (code, label, discount_percent, discount_fixed, description)
@@ -50,8 +53,8 @@ export async function createPromoCode(fields) {
     [
       code.trim().toUpperCase(),
       label.trim(),
-      discountPercent || null,
-      discountFixed || null,
+      pct,
+      fix,
       description || null,
     ]
   );
