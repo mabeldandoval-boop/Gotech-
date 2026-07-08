@@ -1,14 +1,6 @@
-import { requireAdmin } from "../_lib/auth.js";
+import { requireAdmin, getClientIp } from "../_lib/auth.js";
 import { getProductById, updateProduct, deleteProduct } from "../_lib/productsCore.js";
 import { logAction, logChanges } from "../_lib/auditLog.js";
-
-function getClientIp(req) {
-  return (
-    req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
-    req.socket?.remoteAddress ||
-    "unknown"
-  );
-}
 
 // Human-readable field names for the audit log
 const FIELD_LABELS = {
