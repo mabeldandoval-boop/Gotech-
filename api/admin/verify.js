@@ -1,14 +1,6 @@
-import { signAdminToken } from "../_lib/auth.js";
+import { signAdminToken, getClientIp } from "../_lib/auth.js";
 import { checkRateLimit, recordFailedAttempt, clearAttempts } from "../_lib/rateLimiter.js";
 import { logAction } from "../_lib/auditLog.js";
-
-function getClientIp(req) {
-  return (
-    req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
-    req.socket?.remoteAddress ||
-    "unknown"
-  );
-}
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Método no permitido" });
